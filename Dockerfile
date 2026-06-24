@@ -14,7 +14,7 @@ RUN OPENSSL_VERSION=$(curl -fsSL "https://api.github.com/repos/openssl/openssl/r
     && echo "Building OpenSSL ${OPENSSL_VERSION}" \
     && curl -fsSL "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VERSION}/openssl-${OPENSSL_VERSION}.tar.gz" | tar xz -C /tmp \
     && cd "/tmp/openssl-${OPENSSL_VERSION}" \
-    && ./config --prefix=/usr/local --openssldir=/usr/local/etc/ssl --libdir=lib no-tests shared enable-ktls \
+    && ./config --prefix=/usr/local --openssldir=/usr/local/etc/ssl --libdir=lib no-tests shared enable-ktls zlib enable-zstd \
     && make -j"$(nproc)" \
     && make install_sw install_ssldirs \
     && rm -rf /tmp/openssl-*
