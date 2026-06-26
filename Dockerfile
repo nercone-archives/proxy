@@ -63,8 +63,8 @@ RUN groupadd -r nginx && useradd -r -g nginx -s /sbin/nologin -d /nonexistent ng
 
 COPY --from=builder /usr/sbin/nginx           /usr/sbin/nginx
 COPY --from=builder /etc/nginx/mime.types     /etc/nginx/mime.types
-COPY --from=builder /usr/local/lib/libssl.so.3    /usr/local/lib/libssl.so.3
-COPY --from=builder /usr/local/lib/libcrypto.so.3 /usr/local/lib/libcrypto.so.3
+COPY --from=builder /usr/local/lib/libssl.so.4    /usr/local/lib/libssl.so.4
+COPY --from=builder /usr/local/lib/libcrypto.so.4 /usr/local/lib/libcrypto.so.4
 
 RUN ldconfig
 
