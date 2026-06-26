@@ -2,10 +2,12 @@ FROM debian:bookworm-slim AS builder
 
 WORKDIR /build
 
-ARG OPENSSL_VERSION
+ARG DEBIAN_PACKAGES_HASH
 
 RUN apt-get update && apt-get install -y --no-install-recommends git curl wget perl build-essential ca-certificates libpcre2-dev zlib1g-dev libzstd-dev \
     && rm -rf /var/lib/apt/lists/*
+
+ARG OPENSSL_VERSION
 
 RUN echo "Building OpenSSL ${OPENSSL_VERSION}" \
     && curl -fsSL "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VERSION}/openssl-${OPENSSL_VERSION}.tar.gz" | tar xz -C /tmp \
@@ -15,9 +17,11 @@ RUN echo "Building OpenSSL ${OPENSSL_VERSION}" \
     && make install_sw install_ssldirs \
     && rm -rf /tmp/openssl-*
 
-ARG NGINX_VERSION
+ARG ZSTD_NGINX_MODULE_COMMIT
 
 RUN git clone --depth=1 https://github.com/tokers/zstd-nginx-module.git /build/zstd-nginx-module
+
+ARG NGINX_VERSION
 
 RUN echo "Building Nginx ${NGINX_VERSION}" \
     && curl -fsSL "https://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz" | tar xz -C /tmp \
@@ -49,6 +53,8 @@ RUN echo "Building Nginx ${NGINX_VERSION}" \
     && rm -rf /tmp/nginx-*
 
 FROM debian:bookworm-slim
+
+ARG DEBIAN_PACKAGES_HASH
 
 RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0 libzstd1 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
