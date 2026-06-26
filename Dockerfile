@@ -50,26 +50,40 @@ RUN echo "Building Nginx ${NGINX_VERSION}" \
         --add-module=/build/ngx_brotli \
     && make -j"$(nproc)" \
     && make install \
-    && rm -rf /tmp/nginx-*
+    && rm -rf /tmp/nginx-* \
+    && PCRE2=$(ldd /usr/sbin/nginx | awk '/libpcre2/{print $3}') && cp "$PCRE2" /usr/local/lib/libpcre2-8.so.0
 
-FROM debian:bookworm-slim
+FROM gcr.io/distroless/base-debian12 AS distroless
+
+FROM debian:bookworm-slim AS setup
 
 ARG DEBIAN_PACKAGES_HASH
+
+COPY --from=distroless /etc/passwd /etc/passwd
+COPY --from=distroless /etc/group  /etc/group
 
 RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r nginx && useradd -r -g nginx -s /sbin/nologin -d /nonexistent nginx
 
-COPY --from=builder /usr/sbin/nginx           /usr/sbin/nginx
-COPY --from=builder /etc/nginx/mime.types     /etc/nginx/mime.types
-COPY --from=builder /usr/local/lib/libssl.so.4    /usr/local/lib/libssl.so.4
-COPY --from=builder /usr/local/lib/libcrypto.so.4 /usr/local/lib/libcrypto.so.4
-
 RUN ldconfig
 
 RUN mkdir -p /etc/nginx/conf.d /etc/nginx/stream.d /etc/nginx/snippets /var/log/nginx /run/website \
     && chown nginx:nginx /var/log/nginx
+
+FROM gcr.io/distroless/base-debian12
+
+COPY --from=setup   /etc/passwd                    /etc/passwd
+COPY --from=setup   /etc/group                     /etc/group
+COPY --from=setup   /etc/nginx                     /etc/nginx
+COPY --from=setup   /var/log/nginx                 /var/log/nginx
+COPY --from=setup   /run/website                   /run/website
+COPY --from=builder /usr/sbin/nginx                /usr/sbin/nginx
+COPY --from=builder /etc/nginx/mime.types          /etc/nginx/mime.types
+COPY --from=builder /usr/local/lib/libssl.so.4     /usr/local/lib/libssl.so.4
+COPY --from=builder /usr/local/lib/libcrypto.so.4  /usr/local/lib/libcrypto.so.4
+COPY --from=builder /usr/local/lib/libpcre2-8.so.0 /usr/local/lib/libpcre2-8.so.0
 
 EXPOSE 80 443/tcp 443/udp
 
