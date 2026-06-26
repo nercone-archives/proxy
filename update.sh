@@ -5,7 +5,7 @@ echo "> RUN git pull"
 
 git pull
 
-echo "> GET OpenSSL 3.y.z | SET \$OPENSSL_VERSION"
+echo "> GET OpenSSL 3.y.z"
 
 OPENSSL_VERSION=$(curl -fsSL "https://api.github.com/repos/openssl/openssl/releases?per_page=100" \
     | grep -o '"tag_name": *"openssl-[^"]*"' \
@@ -16,7 +16,7 @@ OPENSSL_VERSION=$(curl -fsSL "https://api.github.com/repos/openssl/openssl/relea
 
 echo "Found: OpenSSL ${OPENSSL_VERSION}"
 
-echo "> RUN docker compose build --build-arg OPENSSL_VERSION=\"\${OPENSSL_VERSION}\""
+echo "> RUN docker compose build --build-arg OPENSSL_VERSION=\"${OPENSSL_VERSION}\""
 
 docker compose build --build-arg OPENSSL_VERSION="${OPENSSL_VERSION}"
 
