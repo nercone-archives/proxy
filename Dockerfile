@@ -53,7 +53,8 @@ RUN echo "Building Nginx ${NGINX_VERSION}" \
     && make -j"$(nproc)" \
     && make install \
     && rm -rf /tmp/nginx-* \
-    && PCRE2=$(ldd /usr/sbin/nginx | awk '/libpcre2/{print $3}') && cp "$PCRE2" /usr/local/lib/libpcre2-8.so.0
+    && PCRE2=$(ldd /usr/sbin/nginx | awk '/libpcre2/{print $3}') && cp "$PCRE2" /usr/local/lib/libpcre2-8.so.0 \
+    && CRYPT=$(ldd /usr/sbin/nginx | awk '/libcrypt/{print $3}') && cp "$CRYPT" /usr/local/lib/libcrypt.so.1
 
 FROM gcr.io/distroless/base-debian12 AS distroless
 
@@ -86,6 +87,7 @@ COPY --from=builder /etc/nginx/mime.types          /etc/nginx/mime.types
 COPY --from=builder /usr/local/lib/libssl.so.4     /usr/local/lib/libssl.so.4
 COPY --from=builder /usr/local/lib/libcrypto.so.4  /usr/local/lib/libcrypto.so.4
 COPY --from=builder /usr/local/lib/libpcre2-8.so.0 /usr/local/lib/libpcre2-8.so.0
+COPY --from=builder /usr/local/lib/libcrypt.so.1  /usr/local/lib/libcrypt.so.1
 
 EXPOSE 80 443/tcp 443/udp
 
