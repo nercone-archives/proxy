@@ -3,7 +3,6 @@ FROM debian:bookworm-slim AS builder
 WORKDIR /build
 
 ARG OPENSSL_VERSION
-ARG NGINX_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends git curl wget perl build-essential ca-certificates libpcre2-dev zlib1g-dev libzstd-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -15,6 +14,8 @@ RUN echo "Building OpenSSL ${OPENSSL_VERSION}" \
     && make -j"$(nproc)" \
     && make install_sw install_ssldirs \
     && rm -rf /tmp/openssl-*
+
+ARG NGINX_VERSION
 
 RUN git clone --depth=1 https://github.com/tokers/zstd-nginx-module.git /build/zstd-nginx-module
 
