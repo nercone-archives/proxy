@@ -42,24 +42,13 @@ NGINX_VERSION=$(curl -fsSL "https://nginx.org/en/download.html" \
 
 echo "Nginx ${NGINX_VERSION}"
 
-# Version Check: ngx_brotli
-echo "> VERSION ngx_brotli"
-
-NGX_BROTLI_COMMIT=$(curl -fsSL "https://api.github.com/repos/google/ngx_brotli/commits?per_page=1" \
-    | grep -o '"sha": *"[^"]*"' \
-    | head -1 \
-    | sed 's/"sha": *"\([^"]*\)"/\1/')
-
-echo "ngx_brotli ${NGX_BROTLI_COMMIT}"
-
 # Build
 echo "> RUN docker compose build"
 
 docker compose build \
     --build-arg DEBIAN_PACKAGES_HASH="${DEBIAN_PACKAGES_HASH}" \
     --build-arg OPENSSL_VERSION="${OPENSSL_VERSION}" \
-    --build-arg NGINX_VERSION="${NGINX_VERSION}" \
-    --build-arg NGX_BROTLI_COMMIT="${NGX_BROTLI_COMMIT}"
+    --build-arg NGINX_VERSION="${NGINX_VERSION}"
 
 # Start
 echo "> RUN docker compose up -d"
