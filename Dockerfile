@@ -52,13 +52,14 @@ FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0 libzstd1 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -r nginx \
-    && useradd -r -g nginx -s /sbin/nologin -d /nonexistent nginx
+RUN groupadd -r nginx && useradd -r -g nginx -s /sbin/nologin -d /nonexistent nginx
 
 COPY --from=builder /usr/sbin/nginx           /usr/sbin/nginx
 COPY --from=builder /etc/nginx/mime.types     /etc/nginx/mime.types
 COPY --from=builder /usr/local/lib/libssl.so.3    /usr/local/lib/libssl.so.3
 COPY --from=builder /usr/local/lib/libcrypto.so.3 /usr/local/lib/libcrypto.so.3
+
+RUN ldconfig
 
 RUN mkdir -p /etc/nginx/conf.d /etc/nginx/stream.d /etc/nginx/snippets /var/log/nginx /run/website \
     && chown nginx:nginx /var/log/nginx
