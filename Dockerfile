@@ -4,7 +4,7 @@ WORKDIR /build
 
 ARG DEBIAN_PACKAGES_HASH
 
-RUN apt-get update && apt-get install -y --no-install-recommends git curl wget perl build-essential ca-certificates cmake libpcre2-dev zlib1g-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends git curl wget perl build-essential ca-certificates libpcre2-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ARG OPENSSL_VERSION
@@ -16,12 +16,6 @@ RUN echo "Building OpenSSL ${OPENSSL_VERSION}" \
     && make -j"$(nproc)" \
     && make install_sw install_ssldirs \
     && rm -rf /tmp/openssl-*
-
-ARG NGX_BROTLI_COMMIT
-
-RUN git clone --depth=1 --recurse-submodules https://github.com/google/ngx_brotli.git /build/ngx_brotli \
-    && cmake -S /build/ngx_brotli/deps/brotli -B /build/ngx_brotli/deps/brotli/out -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
-    && cmake --build /build/ngx_brotli/deps/brotli/out --config Release --target brotlienc brotlicommon -j"$(nproc)"
 
 ARG NGINX_VERSION
 
@@ -43,13 +37,11 @@ RUN echo "Building Nginx ${NGINX_VERSION}" \
         --with-http_v2_module \
         --with-http_v3_module \
         --with-http_realip_module \
-        --with-http_gzip_static_module \
         --with-stream \
         --with-stream_ssl_module \
         --with-stream_ssl_preread_module \
         --with-pcre \
         --with-pcre-jit \
-        --add-module=/build/ngx_brotli \
     && make -j"$(nproc)" \
     && make install \
     && rm -rf /tmp/nginx-* \
