@@ -42,9 +42,11 @@ echo "Found: zstd-nginx-module ${ZSTD_NGINX_MODULE_COMMIT}"
 # Version Check: Debian Package List
 echo "> GET Package List Checksum"
 
-MAIN_PKG_HASH=$(curl -fsSL "http://deb.debian.org/debian/dists/bookworm/Release" | awk '/^SHA256:/{in_sha=1; next} in_sha && / main\/binary-amd64\/Packages$/{print $1; exit}')
+MAIN_RELEASE=$(curl -fsSL "http://deb.debian.org/debian/dists/bookworm/Release")
+MAIN_PKG_HASH=$(echo "${MAIN_RELEASE}" | awk '/^SHA256:/{in_sha=1; next} in_sha && / main\/binary-amd64\/Packages$/{print $1; exit}')
 
-SEC_PKG_HASH=$(curl -fsSL "https://security.debian.org/debian-security/dists/bookworm-security/Release" | awk '/^SHA256:/{in_sha=1; next} in_sha && / main\/binary-amd64\/Packages$/{print $1; exit}')
+SEC_RELEASE=$(curl -fsSL "https://security.debian.org/debian-security/dists/bookworm-security/Release")
+SEC_PKG_HASH=$(echo "${SEC_RELEASE}" | awk '/^SHA256:/{in_sha=1; next} in_sha && / main\/binary-amd64\/Packages$/{print $1; exit}')
 
 DEBIAN_PACKAGES_HASH="${MAIN_PKG_HASH:0:16}-${SEC_PKG_HASH:0:16}"
 
