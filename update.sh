@@ -16,9 +16,19 @@ OPENSSL_VERSION=$(curl -fsSL "https://api.github.com/repos/openssl/openssl/relea
 
 echo "Found: OpenSSL ${OPENSSL_VERSION}"
 
-echo "> RUN docker compose build --build-arg OPENSSL_VERSION=\"${OPENSSL_VERSION}\""
+echo "> GET Nginx x.y.z"
 
-docker compose build --build-arg OPENSSL_VERSION="${OPENSSL_VERSION}"
+NGINX_VERSION=$(curl -fsSL "https://nginx.org/en/download.html" \
+    | grep -oE 'nginx-[0-9]+\.[0-9]+\.[0-9]+\.tar\.gz' \
+    | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' \
+    | sort -V \
+    | tail -1)
+
+echo "Found: Nginx ${NGINX_VERSION}"
+
+echo "> RUN docker compose build --build-arg OPENSSL_VERSION=\"${OPENSSL_VERSION}\" --build-arg NGINX_VERSION=\"${NGINX_VERSION}\""
+
+docker compose build --build-arg OPENSSL_VERSION="${OPENSSL_VERSION}" --build-arg NGINX_VERSION="${NGINX_VERSION}"
 
 echo "> RUN docker compose up -d"
 
