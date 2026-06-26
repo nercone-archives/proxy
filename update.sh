@@ -42,15 +42,15 @@ NGINX_VERSION=$(curl -fsSL "https://nginx.org/en/download.html" \
 
 echo "Nginx ${NGINX_VERSION}"
 
-# Version Check: zstd-nginx-module
-echo "> VERSION zstd-nginx-module"
+# Version Check: ngx_brotli
+echo "> VERSION ngx_brotli"
 
-ZSTD_NGINX_MODULE_COMMIT=$(curl -fsSL "https://api.github.com/repos/tokers/zstd-nginx-module/commits?per_page=1" \
+NGX_BROTLI_COMMIT=$(curl -fsSL "https://api.github.com/repos/google/ngx_brotli/commits?per_page=1" \
     | grep -o '"sha": *"[^"]*"' \
     | head -1 \
     | sed 's/"sha": *"\([^"]*\)"/\1/')
 
-echo "zstd-nginx-module ${ZSTD_NGINX_MODULE_COMMIT}"
+echo "ngx_brotli ${NGX_BROTLI_COMMIT}"
 
 # Build
 echo "> RUN docker compose build"
@@ -59,7 +59,7 @@ docker compose build \
     --build-arg DEBIAN_PACKAGES_HASH="${DEBIAN_PACKAGES_HASH}" \
     --build-arg OPENSSL_VERSION="${OPENSSL_VERSION}" \
     --build-arg NGINX_VERSION="${NGINX_VERSION}" \
-    --build-arg ZSTD_NGINX_MODULE_COMMIT="${ZSTD_NGINX_MODULE_COMMIT}"
+    --build-arg NGX_BROTLI_COMMIT="${NGX_BROTLI_COMMIT}"
 
 # Start
 echo "> RUN docker compose up -d"

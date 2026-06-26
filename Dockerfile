@@ -4,7 +4,7 @@ WORKDIR /build
 
 ARG DEBIAN_PACKAGES_HASH
 
-RUN apt-get update && apt-get install -y --no-install-recommends git curl wget perl build-essential ca-certificates libpcre2-dev zlib1g-dev libzstd-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends git curl wget perl build-essential ca-certificates libpcre2-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ARG OPENSSL_VERSION
@@ -12,14 +12,14 @@ ARG OPENSSL_VERSION
 RUN echo "Building OpenSSL ${OPENSSL_VERSION}" \
     && curl -fsSL "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VERSION}/openssl-${OPENSSL_VERSION}.tar.gz" | tar xz -C /tmp \
     && cd "/tmp/openssl-${OPENSSL_VERSION}" \
-    && ./config --prefix=/usr/local --openssldir=/usr/local/etc/ssl --libdir=lib no-tests shared enable-ktls zlib enable-zstd \
+    && ./config --prefix=/usr/local --openssldir=/usr/local/etc/ssl --libdir=lib no-tests shared enable-ktls zlib \
     && make -j"$(nproc)" \
     && make install_sw install_ssldirs \
     && rm -rf /tmp/openssl-*
 
-ARG ZSTD_NGINX_MODULE_COMMIT
+ARG NGX_BROTLI_COMMIT
 
-RUN git clone --depth=1 https://github.com/tokers/zstd-nginx-module.git /build/zstd-nginx-module
+RUN git clone --depth=1 --recurse-submodules https://github.com/google/ngx_brotli.git /build/ngx_brotli
 
 ARG NGINX_VERSION
 
@@ -47,7 +47,7 @@ RUN echo "Building Nginx ${NGINX_VERSION}" \
         --with-stream_ssl_preread_module \
         --with-pcre \
         --with-pcre-jit \
-        --add-module=/build/zstd-nginx-module \
+        --add-module=/build/ngx_brotli \
     && make -j"$(nproc)" \
     && make install \
     && rm -rf /tmp/nginx-*
@@ -56,7 +56,7 @@ FROM debian:bookworm-slim
 
 ARG DEBIAN_PACKAGES_HASH
 
-RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0 libzstd1 ca-certificates \
+RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r nginx && useradd -r -g nginx -s /sbin/nologin -d /nonexistent nginx
