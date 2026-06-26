@@ -2,16 +2,12 @@ FROM debian:bookworm-slim AS builder
 
 WORKDIR /build
 
+ARG OPENSSL_VERSION
+
 RUN apt-get update && apt-get install -y --no-install-recommends git curl wget perl build-essential ca-certificates libpcre2-dev zlib1g-dev libzstd-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN OPENSSL_VERSION=$(curl -fsSL "https://api.github.com/repos/openssl/openssl/releases?per_page=100" \
-        | grep -o '"tag_name": *"openssl-[^"]*"' \
-        | sed 's/.*openssl-\([^"]*\)".*/\1/' \
-        | grep -E '^3\.[0-9]+\.[0-9]+$' \
-        | sort -V \
-        | tail -1) \
-    && echo "Building OpenSSL ${OPENSSL_VERSION}" \
+RUN echo "Building OpenSSL ${OPENSSL_VERSION}" \
     && curl -fsSL "https://github.com/openssl/openssl/releases/download/openssl-${OPENSSL_VERSION}/openssl-${OPENSSL_VERSION}.tar.gz" | tar xz -C /tmp \
     && cd "/tmp/openssl-${OPENSSL_VERSION}" \
     && ./config --prefix=/usr/local --openssldir=/usr/local/etc/ssl --libdir=lib no-tests shared enable-ktls zlib enable-zstd \
