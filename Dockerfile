@@ -15,7 +15,9 @@ RUN echo "Building OpenSSL ${OPENSSL_VERSION}" \
     && ./config --prefix=/usr/local --openssldir=/usr/local/etc/ssl --libdir=lib no-tests shared enable-ktls zlib \
     && make -j"$(nproc)" \
     && make install_sw install_ssldirs \
-    && rm -rf /tmp/openssl-*
+    && rm -rf /tmp/openssl-* \
+    && echo "/usr/local/lib" > /etc/ld.so.conf.d/openssl.conf \
+    && ldconfig
 
 FROM debian:bookworm-slim AS nginx-builder
 
