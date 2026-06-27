@@ -43,7 +43,7 @@ NGINX_VERSION=$(curl -fsSL "https://nginx.org/en/download.html" \
 echo "Nginx ${NGINX_VERSION}"
 
 # Build
-echo "> RUN docker compose build"
+echo "> BUILD"
 
 docker compose build \
     --build-arg DEBIAN_PACKAGES_HASH="${DEBIAN_PACKAGES_HASH}" \
@@ -51,6 +51,6 @@ docker compose build \
     --build-arg NGINX_VERSION="${NGINX_VERSION}"
 
 # Start
-echo "> RUN docker compose up -d"
+echo "> START"
 
 docker compose up -d

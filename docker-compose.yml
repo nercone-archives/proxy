@@ -11,5 +11,6 @@ services:
       - ./snippets:/etc/nginx/snippets:ro
       - ./logs:/var/log/nginx:rw
       - ./static:/static:ro
+      - ./ech:/etc/nginx/ech:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - /run/website:/run/website
