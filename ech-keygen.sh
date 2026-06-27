@@ -27,7 +27,7 @@ docker build --target openssl-builder -t proxy-openssl-builder --build-arg OPENS
 # Generate ECH Key
 echo "> GENERATE ${PUBLIC_NAME}"
 
-docker run --rm -v "${ECH_DIR}:/ech" proxy-openssl-builder /usr/local/bin/openssl ech -public_name "${PUBLIC_NAME}" -pemout "/ech/${PUBLIC_NAME}.pem"
+docker run --rm -v "${ECH_DIR}:/ech" proxy-openssl-builder /usr/local/bin/openssl ech -public_name "${PUBLIC_NAME}" -out "/ech/${PUBLIC_NAME}.pem"
 
 echo ""
 echo "ECH key generated: ${PEM_FILE}"
