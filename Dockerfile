@@ -83,11 +83,11 @@ RUN mkdir -p /etc/nginx/conf.d /etc/nginx/stream.d /etc/nginx/snippets /var/log/
 
 FROM gcr.io/distroless/base-debian12
 
-COPY --from=setup   /etc/passwd    /etc/passwd
-COPY --from=setup   /etc/group     /etc/group
-COPY --from=setup   /etc/nginx     /etc/nginx
-COPY --from=setup   /var/log/nginx /var/log/nginx
-COPY --from=setup   /run/website   /run/website
+COPY --from=setup /etc/passwd    /etc/passwd
+COPY --from=setup /etc/group     /etc/group
+COPY --from=setup /etc/nginx     /etc/nginx
+COPY --from=setup /var/log/nginx /var/log/nginx
+COPY --from=setup /run/website   /run/website
 COPY --from=nginx-builder /usr/sbin/nginx       /usr/sbin/nginx
 COPY --from=nginx-builder /etc/nginx/mime.types /etc/nginx/mime.types
 COPY --from=nginx-builder /usr/local/lib/       /usr/local/lib/
