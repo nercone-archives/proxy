@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-PUBLIC_NAME="${1:-nercone.dev}"
+PUBLIC_NAME="${1:-ech.nerc1.dev}"
 ECH_DIR="$(cd "$(dirname "$0")" && pwd)/nginx/ech"
 PEM_FILE="${ECH_DIR}/${PUBLIC_NAME}.pem"
 
@@ -39,13 +39,9 @@ ECHCONFIG=$(awk '/-----BEGIN ECHCONFIG-----/{found=1; next} /-----END ECHCONFIG-
 
 for DOMAIN in \
     "nercone.dev." \
-    "*.nercone.dev." \
     "diamondgotcat.net." \
-    "*.diamondgotcat.net." \
     "d-g-c.net." \
-    "*.d-g-c.net." \
-    "nerc1.dev." \
-    "*.nerc1.dev."
+    "nerc1.dev."
 do
     printf "%-28s HTTPS 1 . ech=%s\n" "${DOMAIN}" "${ECHCONFIG}"
 done
