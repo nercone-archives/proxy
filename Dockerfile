@@ -88,9 +88,10 @@ COPY --from=setup /etc/group     /etc/group
 COPY --from=setup /etc/nginx     /etc/nginx
 COPY --from=setup /var/log/nginx /var/log/nginx
 COPY --from=setup /run/website   /run/website
+
+COPY --from=nginx-builder /usr/local/lib/       /usr/local/lib/
 COPY --from=nginx-builder /usr/sbin/nginx       /usr/sbin/nginx
 COPY --from=nginx-builder /etc/nginx/mime.types /etc/nginx/mime.types
-COPY --from=nginx-builder /usr/local/lib/       /usr/local/lib/
 
 EXPOSE 80 443/tcp 443/udp
 
