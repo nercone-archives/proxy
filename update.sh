@@ -2,7 +2,7 @@
 set -e
 
 # Update
-echo "> RUN git pull"
+echo "> UPDATE"
 
 git pull
 

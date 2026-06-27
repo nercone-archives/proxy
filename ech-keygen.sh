@@ -29,11 +29,12 @@ echo "> GENERATE ${PUBLIC_NAME}"
 
 docker run --rm -v "${ECH_DIR}:/ech" proxy-openssl-builder /usr/local/bin/openssl ech -public_name "${PUBLIC_NAME}" -out "/ech/${PUBLIC_NAME}.pem"
 
-echo ""
 echo "ECH key generated: ${PEM_FILE}"
-echo ""
-echo "Add the following 'ech=' value to your DNS HTTPS records:"
-echo ""
+
+# Show Informations
+echo "> CAVEATS"
+
+echo "Please add the following 'ech=' value to your DNS HTTPS records:"
 
 ECHCONFIG=$(awk '/-----BEGIN ECHCONFIG-----/{found=1; next} /-----END ECHCONFIG-----/{found=0} found' "${PEM_FILE}" | tr -d '\n')
 
