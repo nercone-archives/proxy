@@ -66,10 +66,10 @@ FROM gcr.io/distroless/base-debian12 AS distroless
 
 FROM debian:bookworm-slim AS setup
 
-ARG DEBIAN_PACKAGES_HASH
-
 COPY --from=distroless /etc/passwd /etc/passwd
 COPY --from=distroless /etc/group  /etc/group
+
+ARG DEBIAN_PACKAGES_HASH
 
 RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
