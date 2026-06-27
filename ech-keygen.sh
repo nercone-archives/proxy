@@ -2,7 +2,7 @@
 set -e
 
 PUBLIC_NAME="${1:-nercone.dev}"
-ECH_DIR="$(cd "$(dirname "$0")" && pwd)/ech"
+ECH_DIR="$(cd "$(dirname "$0")" && pwd)/nginx/ech"
 PEM_FILE="${ECH_DIR}/${PUBLIC_NAME}.pem"
 
 mkdir -p "${ECH_DIR}"
