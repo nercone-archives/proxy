@@ -7,20 +7,27 @@ PEM_FILE="${ECH_DIR}/${PUBLIC_NAME}.pem"
 
 mkdir -p "${ECH_DIR}"
 
+# Version Check: OpenSSL
+echo "> VERSION OpenSSL"
+
+OPENSSL_VERSION=$(curl -fsSL "https://api.github.com/repos/openssl/openssl/releases?per_page=100" \
+    | grep -o '"tag_name": *"openssl-[^"]*"' \
+    | sed 's/.*openssl-\([^"]*\)".*/\1/' \
+    | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' \
+    | sort -V \
+    | tail -1)
+
+echo "OpenSSL ${OPENSSL_VERSION}"
+
 # Prepare Build Container
 echo "> PREPARE"
 
-docker build --target builder -t proxy-builder .
+docker build --target openssl-builder -t proxy-openssl-builder --build-arg OPENSSL_VERSION="${OPENSSL_VERSION}" .
 
 # Generate ECH Key
 echo "> GENERATE ${PUBLIC_NAME}"
 
-docker run --rm \
-    -v "${ECH_DIR}:/ech" \
-    proxy-builder \
-    /usr/local/bin/openssl ech \
-        -public_name "${PUBLIC_NAME}" \
-        -pemout "/ech/${PUBLIC_NAME}.pem"
+docker run --rm -v "${ECH_DIR}:/ech" proxy-openssl-builder /usr/local/bin/openssl ech -public_name "${PUBLIC_NAME}" -pemout "/ech/${PUBLIC_NAME}.pem"
 
 echo ""
 echo "ECH key generated: ${PEM_FILE}"

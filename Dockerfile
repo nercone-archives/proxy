@@ -1,10 +1,10 @@
-FROM debian:bookworm-slim AS builder
+FROM debian:bookworm-slim AS openssl-builder
 
 WORKDIR /build
 
 ARG DEBIAN_PACKAGES_HASH
 
-RUN apt-get update && apt-get install -y --no-install-recommends git curl wget perl build-essential ca-certificates libpcre2-dev zlib1g-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends curl perl build-essential ca-certificates zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ARG OPENSSL_VERSION
@@ -16,6 +16,17 @@ RUN echo "Building OpenSSL ${OPENSSL_VERSION}" \
     && make -j"$(nproc)" \
     && make install_sw install_ssldirs \
     && rm -rf /tmp/openssl-*
+
+FROM debian:bookworm-slim AS nginx-builder
+
+WORKDIR /build
+
+ARG DEBIAN_PACKAGES_HASH
+
+RUN apt-get update && apt-get install -y --no-install-recommends curl perl build-essential ca-certificates libpcre2-dev zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=openssl-builder /usr/local/ /usr/local/
 
 ARG NGINX_VERSION
 
@@ -75,9 +86,9 @@ COPY --from=setup   /etc/group            /etc/group
 COPY --from=setup   /etc/nginx            /etc/nginx
 COPY --from=setup   /var/log/nginx        /var/log/nginx
 COPY --from=setup   /run/website          /run/website
-COPY --from=builder /usr/sbin/nginx       /usr/sbin/nginx
-COPY --from=builder /etc/nginx/mime.types /etc/nginx/mime.types
-COPY --from=builder /usr/local/lib/       /usr/local/lib/
+COPY --from=nginx-builder /usr/sbin/nginx       /usr/sbin/nginx
+COPY --from=nginx-builder /etc/nginx/mime.types /etc/nginx/mime.types
+COPY --from=nginx-builder /usr/local/lib/       /usr/local/lib/
 
 EXPOSE 80 443/tcp 443/udp
 
