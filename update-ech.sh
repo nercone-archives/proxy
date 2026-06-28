@@ -81,6 +81,8 @@ else
         RECORD_ID=$(echo "${RECORD_RESPONSE}" | jq -r '.result[0].id // empty')
 
         EXISTING_VALUE=$(echo "${RECORD_RESPONSE}" | jq -r '.result[0].data.value // empty')
+        EXISTING_TTL=$(echo "${RECORD_RESPONSE}" | jq -r '.result[0].ttl // 1')
+
         BASE_VALUE=$(echo "${EXISTING_VALUE}" | sed -E 's/(^| )ech=[^ ]*//g' | sed 's/^ *//;s/ *$//')
         if [ -n "${BASE_VALUE}" ]; then
             MERGED_VALUE="${BASE_VALUE} ech=${ECHCONFIG}"
@@ -91,7 +93,8 @@ else
         RECORD_BODY=$(jq -cn \
             --arg domain "${DOMAIN}" \
             --arg val "${MERGED_VALUE}" \
-            '{type:"HTTPS", name:$domain, data:{priority:1, target:".", value:$val}}')
+            --argjson ttl "${EXISTING_TTL}" \
+            '{type:"HTTPS", name:$domain, ttl:$ttl, data:{priority:1, target:".", value:$val}}')
 
         if [ -z "${RECORD_ID}" ]; then
             RESULT=$(curl -fsSL -X POST "${CF_HEADERS[@]}" \
