@@ -114,3 +114,5 @@ else
         fi
     done
 fi
+
+docker compose restart
