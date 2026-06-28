@@ -31,12 +31,12 @@ docker run --rm -v "${ECH_DIR}:/ech" proxy-openssl-builder /usr/local/bin/openss
 
 echo "ECH key generated: ${PEM_FILE}"
 
-# Show Informations
+# Update DNS Records
 echo "> CAVEATS"
 
-echo "Please add the following 'ech=' value to your DNS HTTPS records:"
-
 ECHCONFIG=$(awk '/-----BEGIN ECHCONFIG-----/{found=1; next} /-----END ECHCONFIG-----/{found=0} found' "${PEM_FILE}" | tr -d '\n')
+
+echo "The HTTPS records for each domain are scheduled to be updated as follows:"
 
 for DOMAIN in \
     "nercone.dev." \
@@ -46,3 +46,63 @@ for DOMAIN in \
 do
     printf "%-28s HTTPS 1 . ech=%s\n" "${DOMAIN}" "${ECHCONFIG}"
 done
+
+echo "> UPDATE"
+
+if [ -z "${CF_TOKEN}" ]; then
+    echo "WARNING: CF_TOKEN is not set — Skipping DNS update"
+else
+    if ! command -v jq &>/dev/null; then
+        echo "ERROR: jq is required for DNS update but not found in PATH"
+        exit 1
+    fi
+
+    CF_API="https://api.cloudflare.com/client/v4"
+    CF_HEADERS=(-H "Authorization: Bearer ${CF_TOKEN}" -H "Content-Type: application/json")
+
+    for DOMAIN in \
+        "nercone.dev" \
+        "diamondgotcat.net" \
+        "d-g-c.net" \
+        "nerc1.dev"
+    do
+        echo "  [${DOMAIN}] Fetching Zone ID..."
+
+        ZONE_RESPONSE=$(curl -fsSL "${CF_HEADERS[@]}" "${CF_API}/zones?name=${DOMAIN}")
+        ZONE_ID=$(echo "${ZONE_RESPONSE}" | jq -r '.result[0].id // empty')
+
+        if [ -z "${ZONE_ID}" ]; then
+            echo "  [${DOMAIN}] ERROR: Zone Not Found — Skipping"
+            continue
+        fi
+
+        echo "  [${DOMAIN}] Zone ID: ${ZONE_ID}"
+
+        RECORD_RESPONSE=$(curl -fsSL "${CF_HEADERS[@]}" \
+            "${CF_API}/zones/${ZONE_ID}/dns_records?type=HTTPS&name=${DOMAIN}")
+        RECORD_ID=$(echo "${RECORD_RESPONSE}" | jq -r '.result[0].id // empty')
+
+        RECORD_BODY=$(jq -cn \
+            --arg domain "${DOMAIN}" \
+            --arg ech "ech=${ECHCONFIG}" \
+            '{type:"HTTPS", name:$domain, data:{priority:1, target:".", value:$ech}}')
+
+        if [ -z "${RECORD_ID}" ]; then
+            RESULT=$(curl -fsSL -X POST "${CF_HEADERS[@]}" \
+                -d "${RECORD_BODY}" \
+                "${CF_API}/zones/${ZONE_ID}/dns_records")
+            ACTION="Created"
+        else
+            RESULT=$(curl -fsSL -X PUT "${CF_HEADERS[@]}" \
+                -d "${RECORD_BODY}" \
+                "${CF_API}/zones/${ZONE_ID}/dns_records/${RECORD_ID}")
+            ACTION="Updated"
+        fi
+
+        if echo "${RESULT}" | jq -e '.success == true' &>/dev/null; then
+            echo "  [${DOMAIN}] ${ACTION} HTTPS record successfully"
+        else
+            echo "  [${DOMAIN}] ERROR: $(echo "${RESULT}" | jq -r '.errors[]?.message // "unknown error"')"
+        fi
+    done
+fi
