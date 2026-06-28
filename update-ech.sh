@@ -82,10 +82,18 @@ else
             "${CF_API}/zones/${ZONE_ID}/dns_records?type=HTTPS&name=${DOMAIN}")
         RECORD_ID=$(echo "${RECORD_RESPONSE}" | jq -r '.result[0].id // empty')
 
+        EXISTING_VALUE=$(echo "${RECORD_RESPONSE}" | jq -r '.result[0].data.value // empty')
+        BASE_VALUE=$(echo "${EXISTING_VALUE}" | sed -E 's/(^| )ech=[^ ]*//g' | sed 's/^ *//;s/ *$//')
+        if [ -n "${BASE_VALUE}" ]; then
+            MERGED_VALUE="${BASE_VALUE} ech=${ECHCONFIG}"
+        else
+            MERGED_VALUE="ech=${ECHCONFIG}"
+        fi
+
         RECORD_BODY=$(jq -cn \
             --arg domain "${DOMAIN}" \
-            --arg ech "ech=${ECHCONFIG}" \
-            '{type:"HTTPS", name:$domain, data:{priority:1, target:".", value:$ech}}')
+            --arg val "${MERGED_VALUE}" \
+            '{type:"HTTPS", name:$domain, data:{priority:1, target:".", value:$val}}')
 
         if [ -z "${RECORD_ID}" ]; then
             RESULT=$(curl -fsSL -X POST "${CF_HEADERS[@]}" \
