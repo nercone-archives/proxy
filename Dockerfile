@@ -2,7 +2,7 @@ FROM debian:bookworm-slim AS openssl-builder
 
 WORKDIR /build
 
-ARG DEBIAN_PACKAGES_HASH
+ARG PACKAGES_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl perl build-essential ca-certificates zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -23,7 +23,7 @@ FROM debian:bookworm-slim AS nginx-builder
 
 WORKDIR /build
 
-ARG DEBIAN_PACKAGES_HASH
+ARG PACKAGES_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl perl build-essential ca-certificates libpcre2-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
@@ -69,7 +69,7 @@ FROM debian:bookworm-slim AS setup
 COPY --from=distroless /etc/passwd /etc/passwd
 COPY --from=distroless /etc/group  /etc/group
 
-ARG DEBIAN_PACKAGES_HASH
+ARG PACKAGES_VERSION
 
 RUN apt-get update && apt-get install -y --no-install-recommends libpcre2-8-0 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
