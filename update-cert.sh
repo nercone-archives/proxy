@@ -7,7 +7,7 @@ CERT_DIR="/etc/letsencrypt/live/${CERT_NAME}"
 # Renew Certificates
 echo "> RENEW"
 
-certbot renew
+sudo certbot renew
 
 # Upload to Cloudflare
 echo "> UPLOAD"
