@@ -4,7 +4,7 @@ set -e
 # Update
 echo "> UPDATE"
 
-git pull
+sudo git pull
 
 # Version Check: Nginx
 echo "> VERSION Nginx"

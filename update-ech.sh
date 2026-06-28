@@ -5,8 +5,6 @@ PUBLIC_NAME="${1:-ech.nerc1.dev}"
 ECH_DIR="$(cd "$(dirname "$0")" && pwd)/nginx/ech"
 PEM_FILE="${ECH_DIR}/${PUBLIC_NAME}.pem"
 
-mkdir -p "${ECH_DIR}"
-
 # Version Check: OpenSSL
 echo "> VERSION OpenSSL"
 
@@ -34,7 +32,7 @@ echo "ECH key generated: ${PEM_FILE}"
 # Update DNS Records
 echo "> CAVEATS"
 
-ECHCONFIG=$(awk '/-----BEGIN ECHCONFIG-----/{found=1; next} /-----END ECHCONFIG-----/{found=0} found' "${PEM_FILE}" | tr -d '\n')
+ECHCONFIG=$(sudo awk '/-----BEGIN ECHCONFIG-----/{found=1; next} /-----END ECHCONFIG-----/{found=0} found' "${PEM_FILE}" | tr -d '\n')
 
 echo "The HTTPS records for each domain are scheduled to be updated as follows:"
 
