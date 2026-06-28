@@ -113,4 +113,7 @@ else
     done
 fi
 
+# Restart
+echo "> RESTART"
+
 docker compose restart
