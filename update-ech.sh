@@ -27,6 +27,8 @@ echo "> GENERATE ${PUBLIC_NAME}"
 
 docker run --rm -v "${ECH_DIR}:/ech" proxy-openssl-builder /usr/local/bin/openssl ech -public_name "${PUBLIC_NAME}" -out "/ech/${PUBLIC_NAME}.pem"
 
+chmod 600 "${PEM_FILE}"
+
 echo "ECH key generated: ${PEM_FILE}"
 
 # Update DNS Records
