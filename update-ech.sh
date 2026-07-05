@@ -78,43 +78,46 @@ else
 
         echo "  [${DOMAIN}] Zone ID: ${ZONE_ID}"
 
-        RECORD_RESPONSE=$(curl -fsSL "${CF_HEADERS[@]}" \
-            "${CF_API}/zones/${ZONE_ID}/dns_records?type=HTTPS&name=${DOMAIN}")
-        RECORD_ID=$(echo "${RECORD_RESPONSE}" | jq -r '.result[0].id // empty')
+        RECORD_RESPONSE=$(curl -fsSL "${CF_HEADERS[@]}" "${CF_API}/zones/${ZONE_ID}/dns_records?type=HTTPS&per_page=100")
+        RECORD_COUNT=$(echo "${RECORD_RESPONSE}" | jq '.result | length')
 
-        EXISTING_VALUE=$(echo "${RECORD_RESPONSE}" | jq -r '.result[0].data.value // empty')
-        EXISTING_TTL=$(echo "${RECORD_RESPONSE}" | jq -r '.result[0].ttl // 1')
-
-        BASE_VALUE=$(echo "${EXISTING_VALUE}" | sed -E 's/(^| )ech=[^ ]*//g' | sed 's/^ *//;s/ *$//')
-        if [ -n "${BASE_VALUE}" ]; then
-            MERGED_VALUE="${BASE_VALUE} ech=${ECHCONFIG}"
-        else
-            MERGED_VALUE="ech=${ECHCONFIG}"
+        if [ "${RECORD_COUNT}" -eq 0 ]; then
+            echo "  [${DOMAIN}] No HTTPS records found — Skipping"
+            continue
         fi
 
-        RECORD_BODY=$(jq -cn \
-            --arg domain "${DOMAIN}" \
-            --arg val "${MERGED_VALUE}" \
-            --argjson ttl "${EXISTING_TTL}" \
-            '{type:"HTTPS", name:$domain, ttl:$ttl, data:{priority:1, target:".", value:$val}}')
+        for i in $(seq 0 $((RECORD_COUNT - 1))); do
+            RECORD=$(echo "${RECORD_RESPONSE}" | jq -c ".result[${i}]")
+            RECORD_NAME=$(echo "${RECORD}" | jq -r '.name')
+            RECORD_ID=$(echo "${RECORD}" | jq -r '.id')
+            EXISTING_VALUE=$(echo "${RECORD}" | jq -r '.data.value // empty')
+            EXISTING_TTL=$(echo "${RECORD}" | jq -r '.ttl // 1')
+            EXISTING_PRIORITY=$(echo "${RECORD}" | jq -r '.data.priority // 1')
+            EXISTING_TARGET=$(echo "${RECORD}" | jq -r '.data.target // "."')
 
-        if [ -z "${RECORD_ID}" ]; then
-            RESULT=$(curl -fsSL -X POST "${CF_HEADERS[@]}" \
-                -d "${RECORD_BODY}" \
-                "${CF_API}/zones/${ZONE_ID}/dns_records")
-            ACTION="Created"
-        else
-            RESULT=$(curl -fsSL -X PUT "${CF_HEADERS[@]}" \
-                -d "${RECORD_BODY}" \
-                "${CF_API}/zones/${ZONE_ID}/dns_records/${RECORD_ID}")
-            ACTION="Updated"
-        fi
+            BASE_VALUE=$(echo "${EXISTING_VALUE}" | sed -E 's/(^| )ech=[^ ]*//g' | sed 's/^ *//;s/ *$//')
+            if [ -n "${BASE_VALUE}" ]; then
+                MERGED_VALUE="${BASE_VALUE} ech=${ECHCONFIG}"
+            else
+                MERGED_VALUE="ech=${ECHCONFIG}"
+            fi
 
-        if echo "${RESULT}" | jq -e '.success == true' &>/dev/null; then
-            echo "  [${DOMAIN}] ${ACTION} HTTPS record successfully"
-        else
-            echo "  [${DOMAIN}] ERROR: $(echo "${RESULT}" | jq -r '.errors[]?.message // "unknown error"')"
-        fi
+            RECORD_BODY=$(jq -cn \
+                --arg name "${RECORD_NAME}" \
+                --arg val "${MERGED_VALUE}" \
+                --argjson ttl "${EXISTING_TTL}" \
+                --argjson priority "${EXISTING_PRIORITY}" \
+                --arg target "${EXISTING_TARGET}" \
+                '{type:"HTTPS", name:$name, ttl:$ttl, data:{priority:$priority, target:$target, value:$val}}')
+
+            RESULT=$(curl -fsSL -X PUT "${CF_HEADERS[@]}" -d "${RECORD_BODY}" "${CF_API}/zones/${ZONE_ID}/dns_records/${RECORD_ID}")
+
+            if echo "${RESULT}" | jq -e '.success == true' &>/dev/null; then
+                echo "  [${RECORD_NAME}] Updated HTTPS record successfully"
+            else
+                echo "  [${RECORD_NAME}] ERROR: $(echo "${RESULT}" | jq -r '.errors[]?.message // "unknown error"')"
+            fi
+        done
     done
 fi
 
