@@ -1,251 +1,2139 @@
-<!--
-    $ curl https://nercone.dev/error/server/
-    ■   ■ ■■■■■ ■■■■   ■■■■  ■■■  ■   ■ ■■■■■
-    ■■  ■ ■     ■   ■ ■     ■   ■ ■■  ■ ■
-    ■■  ■ ■     ■   ■ ■     ■   ■ ■■  ■ ■
-    ■ ■ ■ ■■■■  ■■■■  ■     ■   ■ ■ ■ ■ ■■■■
-    ■  ■■ ■     ■ ■   ■     ■   ■ ■  ■■ ■
-    ■  ■■ ■     ■  ■  ■     ■   ■ ■  ■■ ■
-    ■   ■ ■■■■■ ■   ■  ■■■■  ■■■  ■   ■ ■■■■■
-
-    このページは、nercone.devのサーバーで何らかの問題が発生し、正常な応答ができない場合に表示されます。
-    すぐには修正されない場合があるため、コーヒーか何かを飲んで待つか、Nerconeを叩き起こして修正させる必要があります。
-    さて、このメッセージを見ているということは...おそらく技術者でしょう？良ければネッ友になりませんか？
-
-    P.S. 暇つぶしにソースコードでもいかがです？ https://github.com/nercone-dev/website/
--->
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja-JP">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>nercone.devへの接続に失敗しました</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Noto+Sans+JP:wght@100..900&display=swap" rel="stylesheet">
+        <title>nercone.devは閉鎖中です</title>
+        <meta name="description" content="nercone.devは現在閉鎖中です。">
+        <!-- for Crawlers -->
+        <link rel="canonical" href="https://nercone.dev/">
+        <meta name="robots" content="index, follow">
+        <meta name="googlebot" content="index, follow">
+        <meta name="author" content="Nercone a.k.a. DiamondGotCat">
+        <meta name="theme-color" content="#1A1A1A">
+        <!-- Thumbnail -->
+        <meta property="og:site_name" content="nercone's website">
+        <meta property="og:title" content="nercone.devは閉鎖中です">
+        <meta property="og:description" content="nercone.devは現在閉鎖中です。">
+        <meta property="og:url" content="https://nercone.dev/">
+        <meta property="og:type" content="website">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="nercone.devは閉鎖中です">
+        <meta name="twitter:description" content="nercone.devは現在閉鎖中です。">
+        <!-- PWA (Progressive Web App) -->
+        <link rel="manifest" href="https://nercone.dev/site.webmanifest">
+        <link rel="apple-touch-icon" href="https://assets.nercone.dev/images/favicon.png" sizes="384x384">
+        <link rel="icon" type="image/png" href="https://assets.nercone.dev/images/favicon.png" sizes="384x384">
+        <link rel="icon" type="image/svg+xml" href="https://assets.nercone.dev/images/favicon.svg" sizes="384x384">
+        <!-- Preconnect -->
+        <link rel="preconnect" href="https://embed-snowflake.torproject.org">
+
+        <!-- Script: main.js -->
+        <script>
+            console.log("今これを読んだな？これでお前とも縁ができた！")
+        </script>
+
+        <!-- Script: initializer.js -->
+        <script>
+            (() => {
+                const features = new Map();
+
+                window.nercone = {
+                    features,
+
+                    register(name, hooks) {
+                        const feature = { init: null, reinit: null, cleanup: null, ...hooks };
+                        features.set(name, feature);
+                        feature.init?.();
+                        return feature;
+                    },
+
+                    cleanup()   { for (const feature of features.values()) feature.cleanup?.(); },
+                    reinit(doc) { for (const feature of features.values()) feature.reinit?.(doc); }
+                };
+            })();
+        </script>
+
+        <!-- Script: loading-overlay.js -->
+        <script>
+            (() => {
+                class LoadingOverlay {
+                    static EASE = 'cubic-bezier(0.125,1,0.25,1)';
+                    static PHASE = {
+                        in:   3000,
+                        wait: 1000,
+                        out:  1000
+                    };
+
+                    init() {
+                        const overlay = document.getElementById('loading-overlay');
+                        if (!overlay) return;
+
+                        const svg = overlay.querySelector('svg');
+                        const line = overlay.querySelector('polyline');
+                        if (!svg || !line) { overlay.remove(); return; }
+
+                        const length = line.getTotalLength();
+                        line.style.strokeDasharray = length;
+                        line.style.strokeDashoffset = length;
+
+                        const opts = (d) => ({ duration: d, easing: LoadingOverlay.EASE, fill: 'forwards' });
+
+                        svg.animate([
+                            { opacity: 0, transform: 'scale(1)',   filter: 'blur(20px)' },
+                            { opacity: 1, transform: 'scale(0.5)', filter: 'blur(0px)'  }
+                        ], opts(LoadingOverlay.PHASE.in));
+                        line.animate([
+                            { strokeDashoffset: length },
+                            { strokeDashoffset: 0 }
+                        ], opts(LoadingOverlay.PHASE.in));
+
+                        setTimeout(() => {
+                            svg.animate([
+                                { opacity: 1, transform: 'scale(0.5)',  filter: 'blur(0px)'  },
+                                { opacity: 0, transform: 'scale(0.75)', filter: 'blur(20px)' }
+                            ], opts(LoadingOverlay.PHASE.out));
+
+                            line.animate([
+                                { strokeDashoffset: 0 },
+                                { strokeDashoffset: length }
+                            ], opts(LoadingOverlay.PHASE.out));
+
+                            overlay.animate([
+                                { opacity: 1, backdropFilter: 'blur(40px)', WebkitBackdropFilter: 'blur(40px)' },
+                                { opacity: 0, backdropFilter: 'blur(0px)',  WebkitBackdropFilter: 'blur(0px)'  }
+                            ], opts(LoadingOverlay.PHASE.out));
+
+                            setTimeout(() => overlay.remove(), LoadingOverlay.PHASE.out);
+                        }, LoadingOverlay.PHASE.in + LoadingOverlay.PHASE.wait);
+                    }
+                }
+
+                const loadingOverlay = new LoadingOverlay();
+                window.nercone.register('loading-overlay', { init: () => loadingOverlay.init() });
+            })();
+        </script>
+
+        <!-- Script: view-transition.js -->
+        <script>
+            (() => {
+                if (!document.startViewTransition) return;
+
+                let abortController = null;
+
+                function preloadAssets(newDoc) {
+                    const curStyleHrefs = new Set([...document.querySelectorAll('link[rel="stylesheet"]')].map(l => l.href));
+                    const curScriptSrcs = new Set([...document.querySelectorAll('script[src]')].map(s => s.src));
+
+                    const tasks = [];
+
+                    const newStyles = [
+                        ...newDoc.head.querySelectorAll('link[rel="stylesheet"]'),
+                        ...newDoc.body.querySelectorAll(':scope > link[rel="stylesheet"]'),
+                    ];
+                    newStyles
+                        .filter(l => !curStyleHrefs.has(new URL(l.href, location.href).href))
+                        .forEach(link => tasks.push(new Promise(resolve => {
+                            const l = link.cloneNode(true);
+                            l.addEventListener('load',  resolve, { once: true });
+                            l.addEventListener('error', resolve, { once: true });
+                            document.head.appendChild(l);
+                        })));
+
+                    const newScriptEls = [
+                        ...newDoc.head.querySelectorAll('script[src]'),
+                        ...newDoc.body.querySelectorAll(':scope > script[src]'),
+                    ].filter(s => !curScriptSrcs.has(new URL(s.src, location.href).href));
+
+                    newScriptEls.forEach(script => tasks.push(new Promise(resolve => {
+                        const l = document.createElement('link');
+                        l.rel = 'preload';
+                        l.as = 'script';
+                        l.href = new URL(script.getAttribute('src'), location.href).href;
+                        l.addEventListener('load',  resolve, { once: true });
+                        l.addEventListener('error', resolve, { once: true });
+                        document.head.appendChild(l);
+                    })));
+
+                    return Promise.all(tasks).then(() => newScriptEls);
+                }
+
+                function updateHead(newDoc) {
+                    const head = document.head;
+                    const newHead = newDoc.head;
+
+                    const t = newHead.querySelector('title');
+                    if (t) document.title = t.textContent;
+
+                    const META_KEEP = new Set(['charset', 'viewport', 'color-scheme', 'theme-color']);
+                    head.querySelectorAll('meta').forEach((m) => {
+                        const key = m.getAttribute('name') || m.getAttribute('property');
+                        if (!key || META_KEEP.has(key)) return;
+                        m.remove();
+                    });
+                    const insertRef = head.querySelector(
+                        'link[rel="preconnect"], link[rel="stylesheet"], link[rel="manifest"], link[rel="icon"], script'
+                    );
+                    newHead.querySelectorAll('meta[name], meta[property]').forEach((m) => {
+                        const key = m.getAttribute('name') || m.getAttribute('property');
+                        if (!META_KEEP.has(key)) head.insertBefore(m.cloneNode(true), insertRef);
+                    });
+
+                    const nc = newHead.querySelector('link[rel="canonical"]');
+                    const cc = head.querySelector('link[rel="canonical"]');
+                    if (nc && cc) cc.href = nc.href;
+
+                    const newStyleHrefs = new Set([
+                        ...newHead.querySelectorAll('link[rel="stylesheet"]'),
+                        ...newDoc.body.querySelectorAll(':scope > link[rel="stylesheet"]'),
+                    ].map(l => new URL(l.href, location.href).href));
+                    head.querySelectorAll('link[rel="stylesheet"]').forEach((l) => {
+                        if (!newStyleHrefs.has(l.href)) l.remove();
+                    });
+                    document.body.querySelectorAll(':scope > link[rel="stylesheet"]').forEach((l) => {
+                        if (!newStyleHrefs.has(l.href)) l.remove();
+                    });
+
+                    const newScriptSrcs = new Set([
+                        ...newHead.querySelectorAll('script[src]'),
+                        ...newDoc.body.querySelectorAll(':scope > script[src]'),
+                    ].map(s => new URL(s.src, location.href).href));
+                    head.querySelectorAll('script[src]').forEach((s) => {
+                        if (!newScriptSrcs.has(s.src)) s.remove();
+                    });
+                    document.body.querySelectorAll(':scope > script[src]').forEach((s) => {
+                        if (!newScriptSrcs.has(s.src)) s.remove();
+                    });
+
+                    head.querySelectorAll('style').forEach(s => s.remove());
+                    newHead.querySelectorAll('style').forEach(s => head.appendChild(s.cloneNode(true)));
+                }
+
+                async function navigate(url, pushHistory = true) {
+                    if (abortController) abortController.abort();
+                    const ac = new AbortController();
+                    abortController = ac;
+
+                    document.startViewTransition(async () => {
+                        // Fetch
+                        let response;
+                        try {
+                            response = await fetch(url.href, {
+                                headers: { 'X-Requested-With': 'view-transition' },
+                                signal: ac.signal
+                            });
+                        } catch (err) {
+                            if (err.name === 'AbortError') return;
+                            location.href = url.href;
+                            return;
+                        }
+
+                        if (ac.signal.aborted) return;
+
+                        const html = await response.text();
+                        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+                        // Cleanup
+                        window.nercone.cleanup();
+
+                        // Head
+                        const deferredScripts = await preloadAssets(doc);
+                        updateHead(doc);
+
+                        // Swap
+                        for (const tag of ['header', 'main']) {
+                            const newEl = doc.querySelector(tag);
+                            const curEl = document.querySelector(tag);
+
+                            if (!newEl || !curEl) {
+                                location.href = url.href; return;
+                            }
+
+                            [...curEl.attributes].forEach(a => curEl.removeAttribute(a.name));
+                            [...newEl.attributes].forEach(a => curEl.setAttribute(a.name, a.value));
+
+                            curEl.innerHTML = newEl.innerHTML;
+
+                            curEl.querySelectorAll('script').forEach((old) => {
+                                const s = document.createElement('script');
+                                [...old.attributes].forEach(a => s.setAttribute(a.name, a.value));
+                                s.textContent = old.textContent;
+                                old.replaceWith(s);
+                            });
+                        }
+
+                        // Deferred scripts
+                        deferredScripts.forEach((script) => {
+                            const s = document.createElement('script');
+                            [...script.attributes].forEach(a => s.setAttribute(a.name, a.value));
+                            document.head.appendChild(s);
+                        });
+
+                        if (pushHistory) history.pushState(null, '', response.url);
+
+                        // Reinit
+                        window.nercone.reinit(doc);
+                    });
+                }
+
+                window.nercone.navigate = (href) => {
+                    let url;
+                    try { url = new URL(href, location.href); } catch (_) { location.href = href; return; }
+                    if (url.origin !== location.origin) { location.href = href; return; }
+                    navigate(url);
+                };
+
+                document.addEventListener('click', (event) => {
+                    const link = event.target.closest('a');
+                    if (!link || link.hasAttribute('download')) return;
+
+                    const url = new URL(link.href, location.href);
+                    if (url.origin !== location.origin) return;
+                    if (link.target || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+                    if (url.hash && url.pathname === location.pathname) {
+                        event.preventDefault();
+                        const target = document.querySelector(url.hash);
+                        if (target) {
+                            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            history.pushState(null, '', url.hash);
+                        }
+                        return;
+                    }
+
+                    event.preventDefault();
+                    navigate(url);
+                });
+
+                window.addEventListener('popstate', () => navigate(new URL(location.href), false));
+            })();
+        </script>
+
+        <!-- Stylesheet: main.css -->
         <style>
-            *, *::before, *::after {
-                box-sizing: border-box;
+            html {
+                color: var(--theme-color-text);
+                background-color: var(--theme-color-background);
+
+                font-family: var(--font-family-sans);
+                font-size: var(--font-size);
+                font-optical-sizing: auto;
+                font-weight: 400;
+                font-style: normal;
+                line-height: 1.19;
+
+                text-size-adjust: 100%;
+                -webkit-text-size-adjust: 100%;
+
                 margin: 0;
                 padding: 0;
             }
 
-            html {
-                color: #ffffff;
-                background: #000000;
-
-                font-family: 'Inter', 'Noto Sans JP', sans-serif;
-            }
-
-            html, body {
-                height: 100%;
-            }
-
             body {
+                margin: 0;
+                min-height: 100vh;
                 display: flex;
                 flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
+            }
 
-                min-height: 100vh;
+            header {
+                will-change: transform;
+                background-color: color-mix(in srgb, var(--theme-color-background) 75%, transparent);
+                backdrop-filter: blur(16px);
+                border-bottom: 1px solid var(--theme-color-border-header);
+
+                display: flex;
+                align-items: center;
+                gap: 16px;
+
+                position: fixed;
                 padding: 24px;
+                z-index: 10;
+                top: 0;
+                left: 0;
+                right: 0;
+            }
+            header .flex-1 {
+                min-width: 0;
+            }
+
+            #header-title {
+                overflow: hidden;
+            }
+
+            @supports (-webkit-backdrop-filter: blur(1px)) {
+                header {
+                    background-color: transparent;
+                    background-image: linear-gradient(to bottom, var(--theme-color-background), color-mix(in srgb, var(--theme-color-background) 75%, transparent));
+                }
             }
 
             main {
+                padding: 24px;
+                padding-top: 92px;
+                flex: 1;
+            }
+            main > *:first-child {
+                margin-top: 0;
+            }
+            main > *:last-child {
+                margin-bottom: 0;
+            }
+
+            h1, h2, h3, h4, h5, h6 {
+                color: var(--theme-color-text-headline);
+            }
+            h1, h2 {
+                padding-bottom: 0.3em;
+                border-bottom: 1px solid var(--theme-color-text-headline-underline);
+            }
+
+            /* Image */
+            img.border {
+                border: solid var(--theme-color-text-headline-underline) 1px;
+            }
+
+            /* Code */
+            pre {
+                border: solid 1px var(--theme-color-border);
+
+                font-family: var(--font-family-mono);
+                font-size: smaller;
+                font-optical-sizing: auto;
+                font-style: normal;
+                line-height: 1.5;
+
+                padding: 8px;
+                padding-left: 10px;
+                padding-right: 10px;
+
+                overflow-x: auto;
+                white-space: pre;
+            }
+
+            code {
+                font-family: var(--font-family-mono);
+                font-optical-sizing: auto;
+                font-style: normal;
+
+                padding: 2px;
+                overflow-wrap: break-word;
+            }
+
+            /* Table */
+            table {
+                background-color: var(--theme-color-background-table-row);
+                border-collapse: collapse;
+                overflow: hidden;
+                width: 100%;
+                margin-bottom: 16px;
+                font-size: smaller;
+            }
+            thead tr {
+                background-color: var(--theme-color-background-table-top);
+            }
+            th {
+                color: var(--theme-color-stark);
+                border-bottom: 2px solid var(--theme-color-border-table-top);
+
+                font-weight: 600;
+                text-align: left;
+
+                padding: 8px 12px;
+            }
+            td {
+                border-bottom: 1px solid var(--theme-color-border-table-row);
+                padding: 8px 12px;
+            }
+            tbody tr:last-child td {
+                border-bottom: none;
+            }
+            tbody tr:hover {
+                background-color: var(--theme-color-background-table-row-hover);
+            }
+            .block table {
+                margin-bottom: 0;
+            }
+        </style>
+        <!-- Stylesheet: colors.css -->
+        <style>
+            /* Colors */
+            :root {
+                --color-black: #000000;
+                --color-white: #FFFFFF;
+
+                --color-dark-grey: #1A1A1A;
+                --color-dark-grey-alt: #202020;
+                --color-bright-dark-grey: #272727;
+                --color-bright-dark-grey-alt: #303030;
+                --color-light-grey: #868686;
+                --color-light-grey-alt: #939393;
+                --color-bright-light-grey: #DADADA;
+                --color-bright-light-grey-alt: #E0E0E0;
+
+                --color-red: #A03030;
+                --color-yellow: #C8A000;
+                --color-green: #00A050;
+                --color-cyan: #50A0C8;
+                --color-blue: #3064A0;
+                --color-orange: #C86000;
+                --color-brown: #A07033;
+                --color-purple: #7840A0;
+                --color-magenta: #A040A0;
+
+                --color-bright-red: #C84040;
+                --color-bright-yellow: #FFC800;
+                --color-bright-green: #00C878;
+                --color-bright-cyan: #60C0FF;
+                --color-bright-blue: #4080C8;
+                --color-bright-orange: #FF8000;
+                --color-bright-brown: #C88C40;
+                --color-bright-purple: #9660C8;
+                --color-bright-magenta: #C860C8;
+            }
+
+            /* Text Colors */
+            .text-stark { color: var(--theme-color-stark); }
+            .text-alt   { color: var(--theme-color-text-alt); }
+
+            .text-black { color: var(--color-black); }
+            .text-white { color: var(--color-white); }
+
+            .text-dark-grey             { color: var(--color-dark-grey); }
+            .text-dark-grey             { color: var(--color-dark-grey-alt); }
+            .text-bright-dark-grey      { color: var(--color-bright-dark-grey); }
+            .text-bright-dark-grey-alt  { color: var(--color-bright-dark-grey-alt); }
+            .text-light-grey            { color: var(--color-light-grey); }
+            .text-light-grey            { color: var(--color-light-grey-alt); }
+            .text-bright-light-grey     { color: var(--color-bright-light-grey); }
+            .text-bright-light-grey-alt { color: var(--color-bright-light-grey-alt); }
+
+            .text-red     { color: var(--color-red); }
+            .text-yellow  { color: var(--color-yellow); }
+            .text-green   { color: var(--color-green); }
+            .text-cyan    { color: var(--color-cyan); }
+            .text-blue    { color: var(--color-blue); }
+            .text-orange  { color: var(--color-orange); }
+            .text-brown   { color: var(--color-brown); }
+            .text-purple  { color: var(--color-purple); }
+            .text-magenta { color: var(--color-magenta); }
+
+            .text-bright-red     { color: var(--color-bright-red); }
+            .text-bright-yellow  { color: var(--color-bright-yellow); }
+            .text-bright-green   { color: var(--color-bright-green); }
+            .text-bright-cyan    { color: var(--color-bright-cyan); }
+            .text-bright-blue    { color: var(--color-bright-blue); }
+            .text-bright-orange  { color: var(--color-bright-orange); }
+            .text-bright-brown   { color: var(--color-bright-brown); }
+            .text-bright-purple  { color: var(--color-bright-purple); }
+            .text-bright-magenta { color: var(--color-bright-magenta); }
+            
+            /* Background Colors */
+            .bg-stark { background-color: var(--theme-color-stark); }
+
+            .bg-black { background-color: var(--color-black); }
+            .bg-white { background-color: var(--color-white); }
+
+            .bg-dark-grey             { background-color: var(--color-dark-grey); }
+            .bg-bright-dark-grey      { background-color: var(--color-bright-dark-grey); }
+            .bg-bright-dark-grey-alt  { background-color: var(--color-bright-dark-grey-alt); }
+            .bg-light-grey            { background-color: var(--color-light-grey); }
+            .bg-bright-light-grey     { background-color: var(--color-bright-light-grey); }
+            .bg-bright-light-grey-alt { background-color: var(--color-bright-light-grey-alt); }
+
+            .bg-red     { background-color: var(--color-red); }
+            .bg-yellow  { background-color: var(--color-yellow); }
+            .bg-green   { background-color: var(--color-green); }
+            .bg-cyan    { background-color: var(--color-cyan); }
+            .bg-blue    { background-color: var(--color-blue); }
+            .bg-orange  { background-color: var(--color-orange); }
+            .bg-brown   { background-color: var(--color-brown); }
+            .bg-purple  { background-color: var(--color-purple); }
+            .bg-magenta { background-color: var(--color-magenta); }
+
+            .bg-bright-red     { background-color: var(--color-bright-red); }
+            .bg-bright-yellow  { background-color: var(--color-bright-yellow); }
+            .bg-bright-green   { background-color: var(--color-bright-green); }
+            .bg-bright-cyan    { background-color: var(--color-bright-cyan); }
+            .bg-bright-blue    { background-color: var(--color-bright-blue); }
+            .bg-bright-orange  { background-color: var(--color-bright-orange); }
+            .bg-bright-brown   { background-color: var(--color-bright-brown); }
+            .bg-bright-purple  { background-color: var(--color-bright-purple); }
+            .bg-bright-magenta { background-color: var(--color-bright-magenta); }
+
+            /* Border Colors */
+            .border-stark { border-color: var(--theme-color-stark); }
+
+            .border-black { border-color: var(--color-black); }
+            .border-white { border-color: var(--color-white); }
+
+            .border-dark-grey             { border-color: var(--color-dark-grey); }
+            .border-bright-dark-grey      { border-color: var(--color-bright-dark-grey); }
+            .border-bright-dark-grey-alt  { border-color: var(--color-bright-dark-grey-alt); }
+            .border-light-grey            { border-color: var(--color-light-grey); }
+            .border-bright-light-grey     { border-color: var(--color-bright-light-grey); }
+            .border-bright-light-grey-alt { border-color: var(--color-bright-light-grey-alt); }
+
+            .border-red     { border-color: var(--color-red); }
+            .border-yellow  { border-color: var(--color-yellow); }
+            .border-green   { border-color: var(--color-green); }
+            .border-cyan    { border-color: var(--color-cyan); }
+            .border-blue    { border-color: var(--color-blue); }
+            .border-orange  { border-color: var(--color-orange); }
+            .border-brown   { border-color: var(--color-brown); }
+            .border-purple  { border-color: var(--color-purple); }
+            .border-magenta { border-color: var(--color-magenta); }
+
+            .border-bright-red     { border-color: var(--color-bright-red); }
+            .border-bright-yellow  { border-color: var(--color-bright-yellow); }
+            .border-bright-green   { border-color: var(--color-bright-green); }
+            .border-bright-cyan    { border-color: var(--color-bright-cyan); }
+            .border-bright-blue    { border-color: var(--color-bright-blue); }
+            .border-bright-orange  { border-color: var(--color-bright-orange); }
+            .border-bright-brown   { border-color: var(--color-bright-brown); }
+            .border-bright-purple  { border-color: var(--color-bright-purple); }
+            .border-bright-magenta { border-color: var(--color-bright-magenta); }
+        </style>
+        <!-- Stylesheet: loading-overlay.css -->
+        <style>
+            #loading-overlay {
+                view-transition-name: none;
+
+                background: var(--theme-color-background);
+                backdrop-filter: blur(40px);
+
+                opacity: 1;
+
                 display: flex;
-                flex-direction: column;
                 align-items: center;
+                justify-content: center;
+
+                position: fixed;
+                inset: 0;
+                z-index: 100000;
+
+                pointer-events: none;
+            }
+            #loading-overlay svg {
+                will-change: opacity, filter, transform;
+
+                color: var(--theme-color-loading-overlay-logo);
+                filter: blur(20px);
+
+                opacity: 0;
+
+                --size: clamp(340px, 28vmin, 380px);
+                width: var(--size);
+                height: calc(var(--size) * 512 / 832);
+
+                transform: scale(1);
+            }
+            #loading-overlay polyline {
+                will-change: stroke-dashoffset;
+            }
+        </style>
+        <!-- Stylesheet: view-transition.css -->
+        <style>
+            header {
+                view-transition-name: header-content;
+            }
+            main {
+                view-transition-name: main-content;
             }
 
-            .icon {
-                position: relative;
-
-                width: 128px;
-                height: 128px;
-
-                margin-bottom: clamp(20px, 3vw, 32px);
+            @keyframes vt-fade-out {
+                from { opacity: 1; }
+                to   { opacity: 0; }
             }
-
-            .icon svg {
-                border-radius: 24px;
-
-                width: 128px;
-                height: 128px;
-
-                display: block;
+            @keyframes vt-fade-in {
+                from { opacity: 0; }
+                to   { opacity: 1; }
             }
-
-            h1 {
-                color: #ffffff;
-
-                font-family: "Inter", "Noto Sans JP", sans-serif;
-                font-size: clamp(20px, 3.5vw, 32px);
-                font-weight: 400;
-
-                line-height: 1.3;
-                letter-spacing: -0.02em;
-
-                margin-bottom: clamp(10px, 1.5vw, 16px);
+            @keyframes vt-blur-out {
+                from { filter: blur(0px); }
+                to   { filter: blur(6px); }
             }
-
-            p {
-                color: #868686;
-
-                font-family: "Inter", "Noto Sans JP", sans-serif;
-                font-size: clamp(16px, 2vw, 18px);
-                font-weight: 400;
-
-                line-height: 1.6;
-                word-break: keep-all;
-
-                max-width: 90vw;
+            @keyframes vt-blur-in {
+                from { filter: blur(6px); }
+                to   { filter: blur(0px); }
             }
-
-            .br-mobile {
-                display: none;
-            }
-
-            @media (max-width: 480px) {
-                .icon {
-                    width: 96px;
-                    height: 96px;
+            @media (prefers-reduced-motion: reduce) {
+                ::view-transition-old(header-content),
+                ::view-transition-new(header-content),
+                ::view-transition-old(main-content),
+                ::view-transition-new(main-content) {
+                    z-index: 1;
+                    pointer-events: none;
                 }
+            }
+        </style>
+        <!-- Stylesheet: themes/dark.css -->
+        <style>
+            :root {
+                --theme-color-stark: var(--color-white);
+                --theme-color-loading-overlay-logo: var(--color-white);
 
-                .icon svg {
-                    width: 96px;
-                    height: 96px;
-                }
+                --theme-color-text: var(--color-bright-light-grey-alt);
+                --theme-color-text-alt: var(--color-light-grey-alt);
+                --theme-color-text-headline: var(--color-white);
+                --theme-color-text-headline-underline: color-mix(in srgb, var(--color-white) 10%, transparent);
 
-                .br-mobile {
-                    display: block;
-                }
+                --theme-color-background: var(--color-dark-grey);
+                --theme-color-background-alt: var(--color-bright-dark-grey);
+
+                --theme-color-border: color-mix(in srgb, var(--color-white) 10%, transparent);
+                --theme-color-border-header: color-mix(in srgb, var(--color-white) 10%, transparent);
+
+                --theme-color-background-table-top: var(--color-bright-dark-grey-alt);
+                --theme-color-background-table-row: var(--color-bright-dark-grey);
+                --theme-color-background-table-row-hover: var(--color-bright-dark-grey);
+                --theme-color-border-table-top: var(--color-light-grey);
+                --theme-color-border-table-row: var(--color-bright-dark-grey-alt);
+
+                --theme-color-background-dropdown: var(--color-dark-grey-alt);
+                --theme-color-background-dropdown-active: var(--color-dark-grey-alt);
+
+                --theme-color-background-cursor: color-mix(in srgb, var(--color-white) 75%, transparent);
+                --theme-color-background-cursor-on-link: color-mix(in srgb, var(--color-white) 25%, transparent);
             }
         </style>
     </head>
     <body>
-        <main>
-            <div class="icon">
-                <svg id="_レイヤー_1" data-name="レイヤー 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-                <defs>
-                    <style>
-                    .cls-1 {
-                        fill: #3b3b3b;
-                    }
+        <div id="cursor"></div>
 
-                    .cls-2 {
-                        fill: #1e1e1e;
-                    }
+        <div id="loading-overlay" aria-hidden="true">
+            <svg viewBox="96 256 832 512" xmlns="http://www.w3.org/2000/svg">
+                <polyline points="872 572.75 152 332 152 692 512 692 872 332 872 692 684.5 692" fill="none" stroke="currentColor" stroke-width="48" stroke-miterlimit="10"/>
+            </svg>
+        </div>
 
-                    .cls-3 {
-                        fill: #272727;
-                    }
-
-                    .cls-4 {
-                        fill: #303030;
-                    }
-
-                    .cls-5 {
-                        fill: #fff;
-                    }
-
-                    .cls-6 {
-                        fill: #e3dbd9;
-                    }
-
-                    .cls-7 {
-                        fill: #c84040;
-                    }
-
-                    .cls-8 {
-                        fill: #1a1a1a;
-                    }
-                    </style>
-                </defs>
-                <rect class="cls-8" width="1024" height="1024"/>
-                <g>
-                    <rect class="cls-4" x="480" y="536" width="8" height="16"/>
-                    <rect class="cls-4" x="456" y="464" width="8" height="16"/>
-                    <rect class="cls-4" x="464" y="480" width="8" height="32"/>
-                    <rect class="cls-4" x="616" y="984" width="144" height="8"/>
-                    <polygon class="cls-4" points="600 936 600 1024 576 1024 576 992 568 992 568 928 592 928 592 936 600 936"/>
-                    <rect class="cls-4" x="472" y="512" width="8" height="24"/>
-                    <rect class="cls-4" x="760" y="992" width="24" height="8"/>
-                    <rect class="cls-4" x="448" y="456" width="8" height="8"/>
-                    <rect class="cls-4" x="440" y="448" width="8" height="8"/>
-                    <polygon class="cls-4" points="760 504 760 536 752 536 752 544 656 544 656 552 592 552 592 544 560 544 560 552 544 552 544 560 520 560 520 552 528 552 528 544 536 544 536 536 544 536 544 528 552 528 552 520 560 520 560 512 576 512 576 504 592 504 592 496 608 496 608 488 624 488 624 480 640 480 640 472 656 472 656 464 672 464 672 456 688 456 688 448 704 448 704 440 712 440 712 432 720 432 720 424 640 424 640 416 728 416 728 424 736 424 736 440 744 440 744 488 752 488 752 504 760 504"/>
-                    <polygon class="cls-4" points="408 904 408 928 400 928 400 952 392 952 392 968 384 968 384 992 376 992 376 1008 368 1008 368 1024 336 1024 336 1016 344 1016 344 1000 352 1000 352 976 360 976 360 960 368 960 368 936 376 936 376 912 384 912 384 904 408 904"/>
-                    <rect class="cls-4" x="432" y="440" width="8" height="8"/>
-                    <rect class="cls-4" x="416" y="432" width="16" height="8"/>
-                    <polygon class="cls-6" points="600 472 600 496 592 496 592 504 576 504 576 512 560 512 560 520 552 520 552 528 544 528 544 512 536 512 536 496 528 496 528 480 520 480 520 448 504 448 504 440 496 440 496 424 472 424 472 416 440 416 440 408 432 408 432 400 424 400 424 392 416 392 416 384 408 384 408 360 416 360 416 352 424 352 424 264 432 264 432 304 440 304 440 320 456 320 456 336 464 336 464 344 472 344 472 352 488 352 488 344 496 344 496 336 504 336 504 320 512 320 512 296 504 296 504 264 496 264 496 240 504 240 504 248 512 248 512 272 520 272 520 280 528 280 528 288 544 288 544 280 552 280 552 288 560 288 560 296 576 296 576 304 584 304 584 440 576 440 576 448 568 448 568 456 592 456 592 472 600 472"/>
-                    <rect class="cls-6" x="408" y="320" width="8" height="32"/>
-                    <polygon class="cls-2" points="720 424 720 432 712 432 712 440 704 440 704 448 688 448 688 456 672 456 672 464 656 464 656 472 640 472 640 480 624 480 624 488 608 488 608 496 600 496 600 472 592 472 592 448 600 448 600 440 608 440 608 432 616 432 616 424 720 424"/>
-                    <polygon class="cls-3" points="720 248 720 336 712 336 712 352 704 352 704 376 696 376 696 384 688 384 688 392 680 392 680 400 664 400 664 408 656 408 656 416 640 416 640 424 616 424 616 432 608 432 608 440 600 440 600 448 592 448 592 456 568 456 568 448 576 448 576 440 584 440 584 304 576 304 576 296 560 296 560 288 552 288 552 280 544 280 544 288 528 288 528 280 520 280 520 272 512 272 512 248 504 248 504 240 496 240 496 264 504 264 504 296 512 296 512 320 504 320 504 336 496 336 496 344 488 344 488 352 472 352 472 344 464 344 464 336 456 336 456 320 440 320 440 304 432 304 432 264 424 264 424 352 416 352 416 320 408 320 408 352 416 352 416 360 408 360 408 384 416 384 416 392 424 392 424 400 432 400 432 408 440 408 440 416 448 416 448 424 424 424 424 432 416 432 416 440 392 440 392 448 368 448 368 440 352 440 352 432 336 432 336 424 328 424 328 352 320 352 320 256 328 256 328 232 336 232 336 216 344 216 344 192 352 192 352 176 360 176 360 168 352 168 352 160 336 160 336 152 328 152 328 144 320 144 320 136 304 136 304 120 288 120 288 112 280 112 280 120 272 120 272 96 296 96 296 104 344 104 344 112 400 112 400 104 408 104 408 96 416 96 416 88 432 88 432 80 448 80 448 72 488 72 488 64 560 64 560 56 576 56 576 48 592 48 592 40 608 40 608 32 624 32 624 24 656 24 656 48 648 48 648 32 632 32 632 48 624 48 624 56 616 56 616 72 608 72 608 80 600 80 600 88 592 88 592 96 584 96 584 112 576 112 576 128 584 128 584 136 592 136 592 144 600 144 600 152 608 152 608 160 624 160 624 168 656 168 656 144 664 144 664 160 672 160 672 176 680 176 680 184 688 184 688 200 696 200 696 216 704 216 704 232 712 232 712 248 720 248"/>
-                    <polygon class="cls-3" points="672 544 672 664 664 664 664 680 656 680 656 720 648 720 648 736 640 736 640 752 632 752 632 784 624 784 624 864 632 864 632 912 640 912 640 952 632 952 632 960 624 960 624 968 616 968 616 1008 608 1008 608 1024 600 1024 600 936 592 936 592 928 544 928 544 920 480 920 480 912 408 912 408 904 384 904 384 912 376 912 376 936 368 936 368 960 360 960 360 976 352 976 352 1000 344 1000 344 1016 336 1016 336 1024 296 1024 296 992 304 992 304 968 312 968 312 936 320 936 320 920 328 920 328 904 352 904 352 896 368 896 368 888 376 888 376 880 384 880 384 872 392 872 392 864 400 864 400 856 408 856 408 840 416 840 416 832 424 832 424 816 432 816 432 776 440 776 440 728 448 728 448 680 456 680 456 624 464 624 464 616 472 616 472 576 480 576 480 552 520 552 520 560 544 560 544 552 560 552 560 544 592 544 592 552 656 552 656 544 672 544"/>
-                    <polygon class="cls-3" points="520 448 520 472 512 472 512 456 504 456 504 448 520 448"/>
-                    <polygon class="cls-1" points="480 536 480 576 472 576 472 616 464 616 464 624 456 624 456 680 448 680 448 728 440 728 440 776 432 776 432 816 424 816 424 832 416 832 416 840 408 840 408 856 400 856 400 864 392 864 392 872 384 872 384 880 376 880 376 888 368 888 368 896 352 896 352 904 312 904 312 896 296 896 296 888 288 888 288 880 280 880 280 864 272 864 272 848 264 848 264 840 256 840 256 816 248 816 248 800 240 800 240 776 232 776 232 752 240 752 240 688 248 688 248 672 264 672 264 664 272 664 272 640 280 640 280 624 288 624 288 616 296 616 296 608 304 608 304 592 312 592 312 576 320 576 320 560 328 560 328 536 336 536 336 520 344 520 344 496 352 496 352 480 360 480 360 472 368 472 368 456 376 456 376 448 392 448 392 440 432 440 432 448 440 448 440 456 448 456 448 464 456 464 456 480 464 480 464 512 472 512 472 536 480 536"/>
-                    <polygon class="cls-1" points="784 1000 784 1024 608 1024 608 1008 616 1008 616 992 760 992 760 1000 784 1000"/>
-                    <polygon class="cls-1" points="784 880 784 992 760 992 760 984 616 984 616 968 624 968 624 960 632 960 632 952 640 952 640 912 632 912 632 864 624 864 624 784 632 784 632 752 640 752 640 736 648 736 648 720 656 720 656 680 664 680 664 664 672 664 672 544 744 544 744 560 752 560 752 584 760 584 760 656 768 656 768 752 776 752 776 880 784 880"/>
-                    <polygon class="cls-1" points="576 992 576 1024 368 1024 368 1008 376 1008 376 992 384 992 384 968 392 968 392 952 400 952 400 928 408 928 408 912 480 912 480 920 544 920 544 928 568 928 568 992 576 992"/>
-                    <polygon class="cls-1" points="360 168 360 176 352 176 352 192 344 192 344 216 336 216 336 232 320 232 320 216 312 216 312 208 304 208 304 192 296 192 296 176 288 176 288 152 280 152 280 128 272 128 272 120 280 120 280 112 288 112 288 120 304 120 304 136 320 136 320 144 328 144 328 152 336 152 336 160 352 160 352 168 360 168"/>
-                    <polygon class="cls-1" points="656 48 656 168 624 168 624 160 608 160 608 152 600 152 600 144 592 144 592 136 584 136 584 128 576 128 576 112 584 112 584 96 592 96 592 88 600 88 600 80 608 80 608 72 616 72 616 56 624 56 624 48 632 48 632 32 648 32 648 48 656 48"/>
-                    <polygon class="cls-1" points="544 512 544 536 536 536 536 544 528 544 528 552 488 552 488 536 480 536 480 512 472 512 472 480 464 480 464 464 456 464 456 456 448 456 448 448 440 448 440 440 432 440 432 432 424 432 424 424 448 424 448 416 472 416 472 424 496 424 496 440 504 440 504 456 512 456 512 472 520 472 520 480 528 480 528 496 536 496 536 512 544 512"/>
-                </g>
-                <g id="error">
-                    <g>
-                    <rect class="cls-7" x="472" y="512" width="8" height="24"/>
-                    <rect class="cls-7" x="480" y="536" width="8" height="16"/>
-                    <rect class="cls-7" x="464" y="480" width="8" height="32"/>
-                    <rect class="cls-7" x="456" y="464" width="8" height="16"/>
-                    <rect class="cls-7" x="440" y="448" width="8" height="8"/>
-                    <rect class="cls-7" x="448" y="456" width="8" height="8"/>
-                    <rect class="cls-7" x="416" y="432" width="16" height="8"/>
-                    <rect class="cls-7" x="432" y="440" width="8" height="8"/>
-                    </g>
-                    <g>
-                    <rect class="cls-7" x="616" y="984" width="144" height="8"/>
-                    <rect class="cls-7" x="760" y="992" width="24" height="8"/>
-                    </g>
-                    <g>
-                    <polygon class="cls-7" points="632 232 632 240 624 240 624 248 616 248 616 256 608 256 608 264 600 264 600 272 592 272 592 264 584 264 584 256 576 256 576 248 568 248 568 240 560 240 560 232 568 232 568 224 576 224 576 216 584 216 584 208 592 208 592 200 600 200 600 208 608 208 608 216 616 216 616 224 624 224 624 232 632 232"/>
-                    <g>
-                        <rect class="cls-4" x="592" y="192" width="8" height="8"/>
-                        <rect class="cls-4" x="584" y="200" width="8" height="8"/>
-                        <rect class="cls-4" x="600" y="200" width="8" height="8"/>
-                        <rect class="cls-4" x="576" y="208" width="8" height="8"/>
-                        <rect class="cls-4" x="608" y="208" width="8" height="8"/>
-                        <rect class="cls-4" x="568" y="216" width="8" height="8"/>
-                        <rect class="cls-4" x="616" y="216" width="8" height="8"/>
-                        <rect class="cls-4" x="560" y="224" width="8" height="8"/>
-                        <rect class="cls-4" x="624" y="224" width="8" height="8"/>
-                        <rect class="cls-4" x="552" y="232" width="8" height="8"/>
-                        <rect class="cls-4" x="632" y="232" width="8" height="8"/>
-                        <rect class="cls-4" x="560" y="240" width="8" height="8"/>
-                        <rect class="cls-4" x="624" y="240" width="8" height="8"/>
-                        <rect class="cls-4" x="568" y="248" width="8" height="8"/>
-                        <rect class="cls-4" x="616" y="248" width="8" height="8"/>
-                        <rect class="cls-4" x="576" y="256" width="8" height="8"/>
-                        <rect class="cls-4" x="608" y="256" width="8" height="8"/>
-                        <rect class="cls-4" x="584" y="264" width="8" height="8"/>
-                        <rect class="cls-4" x="600" y="264" width="8" height="8"/>
-                        <rect class="cls-4" x="592" y="272" width="8" height="8"/>
-                    </g>
-                    <g>
-                        <rect class="cls-5" x="592" y="248" width="8" height="8"/>
-                        <rect class="cls-5" x="592" y="216" width="8" height="24"/>
-                    </g>
-                    </g>
-                </g>
-                </svg>
+        <div id="snowflake-toast" class="snowflake-toast is-hidden cursor-system">
+            <div class="snowflake-toast-header">
+                <span><a href="/snowflake/" class="text-no-decoration snowflake-toast-link">Snowflake</a></span>
+                <div class="snowflake-toast-actions">
+                    <button type="button" class="snowflake-toast-minimize" aria-label="非表示" aria-pressed="false">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="6" y1="12" x2="18" y2="12"/>
+                            <line class="snowflake-toast-minimize-vertical" x1="12" y1="6" x2="12" y2="18"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="snowflake-toast-close" aria-label="閉じる">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <h1><span id="hostname">nercone.dev</span> への接続に失敗しました</h1>
-            <p>少し待ってからページを再読み込みしてください。<br class="br-mobile">HTTPレスポンスステータスコードは <span id="status-code">502</span> です。</p>
+            <iframe src="https://snowflake.torproject.org/embed.html" width="320" height="262" frameborder="0" scrolling="no" title="Snowflake"></iframe>
+        </div>
+
+        <header class="flex">
+            <div class="flex-1 flex">
+                <a id="header-title" href="/" class="text-no-decoration" translate="no">nercone.dev</a>
+            </div>
+            <div class="flex">
+                <a href="/access-counter/" class="text-no-decoration font-variant-numeric-tabular small:hide" translate="no">--</a>
+                <a href="/about/server/" class="text-no-decoration small:hide" translate="no">static</a>
+            </div>
+        </header>
+        <main>
+            <h1>nercone.devは閉鎖中です</h1>
+            <p>nercone.devが依存している独自のHTTP/1.1処理用ライブラリである<a href="https://github.com/nercone-rear/momiji/">Momiji</a>に問題が多く存在し、Webサーバーの長期間の起動が困難になっています。</p>
+            <p>そのため、一時的にサーバーを停止し、このページをNginxから直接配信しています。</p>
+            <p>復旧まで2~3週間ほどかかるかもしれません。お待ちください。</p>
         </main>
+
+        <!-- Script: cursor.js -->
         <script>
-            console.log("このページは、nercone.devのサーバーで何らかの問題が発生し、正常な応答ができない場合に表示されます。\nすぐには修正されない場合があるため、コーヒーか何かを飲んで待つか、Nerconeを叩き起こして修正させる必要があります。\nさて、このメッセージを見ているということは...おそらく技術者でしょう？良ければネッ友になりませんか？\nP.S. 暇つぶしにソースコードでもいかがです？ https://github.com/nercone-dev/website/")
-            document.getElementById("hostname").textContent = location.hostname;
-            const nav = performance.getEntriesByType("navigation")[0];
-            if (nav?.responseStatus) document.getElementById("status-code").textContent = nav.responseStatus;
+            (() => {
+                class Cursor {
+                    static LINK_SELECTORS = 'a, button, [role="button"], input[type="submit"], input[type="button"]';
+                    static PADDING = 6;
+                    static TOUCH_MOUSE_GUARD_MS = 800;
+                    static TEXT_GAP_PX = 4;
+                    static LINK_GAP_PX = 4;
+
+                    constructor() {
+                        this.ac = null;
+                        this.mouseX = 0;
+                        this.mouseY = 0;
+                        this.currentLinkEl = null;
+                        this.rafId = null;
+                        this.cursor = null;
+                        this.cursorVisible = false;
+                        this.lastTouchTime = 0;
+                        this.isMouseDown = false;
+
+                        document.documentElement.style.cursor = 'none';
+                    }
+
+                    // Visibility
+                    showCursor() {
+                        if (!this.cursorVisible && this.cursor) {
+                            this.cursorVisible = true;
+                            this.cursor.classList.add('visible');
+                        }
+                    }
+
+                    hideCursor() {
+                        if (this.cursor) {
+                            this.cursorVisible = false;
+                            this.cursor.style.borderRadius = '';
+                            this.cursor.classList.remove('visible');
+                            this.currentLinkEl = null;
+                            if (this.rafId) { cancelAnimationFrame(this.rafId); this.rafId = null; }
+                            this.cursor.classList.remove('on-link', 'on-text');
+                        }
+                    }
+
+                    isSyntheticMouse() {
+                        return Date.now() - this.lastTouchTime < Cursor.TOUCH_MOUSE_GUARD_MS;
+                    }
+
+                    // Helpers
+                    findNearbyLink(x, y) {
+                        const el = document.elementFromPoint(x, y);
+                        const exact = el ? el.closest(Cursor.LINK_SELECTORS) : null;
+                        if (exact) return exact;
+
+                        let best = null;
+                        let bestDist = Infinity;
+                        for (const link of document.querySelectorAll(Cursor.LINK_SELECTORS)) {
+                            const r = link.getBoundingClientRect();
+                            const dx = Math.max(0, r.left - x, x - r.right);
+                            const dy = Math.max(0, r.top  - y, y - r.bottom);
+                            const dist = Math.max(dx, dy);
+                            if (dist <= Cursor.LINK_GAP_PX && dist < bestDist) {
+                                bestDist = dist;
+                                best = link;
+                            }
+                        }
+                        return best;
+                    }
+
+                    isOverRenderedText(x, y) {
+                        let node, offset;
+                        if (document.caretPositionFromPoint) {
+                            const pos = document.caretPositionFromPoint(x, y);
+                            if (!pos || pos.offsetNode.nodeType !== Node.TEXT_NODE) return false;
+                            node = pos.offsetNode;
+                            offset = pos.offset;
+                        } else if (document.caretRangeFromPoint) {
+                            const r = document.caretRangeFromPoint(x, y);
+                            if (!r || r.startContainer.nodeType !== Node.TEXT_NODE) return false;
+                            node = r.startContainer;
+                            offset = r.startOffset;
+                        } else {
+                            return false;
+                        }
+
+                        const range = document.createRange();
+                        const candidates = [];
+                        if (offset < node.length) candidates.push([offset, offset + 1]);
+                        if (offset > 0)           candidates.push([offset - 1, offset]);
+                        if (candidates.length === 0) return false;
+
+                        const gap = Cursor.TEXT_GAP_PX;
+                        for (const [s, e] of candidates) {
+                            range.setStart(node, s);
+                            range.setEnd(node, e);
+                            for (const rect of range.getClientRects()) {
+                                if (x >= rect.left - gap && x <= rect.right  + gap &&
+                                    y >= rect.top  - gap && y <= rect.bottom + gap) return true;
+                            }
+                        }
+                        return false;
+                    }
+
+                    // Rendering
+                    updateCursorForLink(el) {
+                        const PADDING = Cursor.PADDING;
+                        let rect = el.getBoundingClientRect();
+
+                        if (getComputedStyle(el).display === 'inline') {
+                            const descendants = el.querySelectorAll('*');
+                            if (descendants.length > 0) {
+                                const rects = [...descendants].map(c => c.getBoundingClientRect());
+                                const left   = Math.min(...rects.map(r => r.left));
+                                const top    = Math.min(...rects.map(r => r.top));
+                                const right  = Math.max(...rects.map(r => r.right));
+                                const bottom = Math.max(...rects.map(r => r.bottom));
+                                rect = { left, top, width: right - left, height: bottom - top };
+                            }
+                        }
+
+                        this.cursor.classList.remove('on-text');
+                        this.cursor.classList.add('on-link');
+                        this.cursor.style.transform = 'none';
+                        this.cursor.style.left   = (rect.left - PADDING) + 'px';
+                        this.cursor.style.top    = (rect.top  - PADDING) + 'px';
+                        this.cursor.style.width  = (rect.width  + PADDING * 2) + 'px';
+                        this.cursor.style.height = (rect.height + PADDING * 2) + 'px';
+
+                        function parseRadius(val, wRef) {
+                            if (!val) return 0;
+                            const first = val.trim().split(' ')[0];
+                            return first.endsWith('%') ? parseFloat(first) / 100 * wRef : (parseFloat(first) || 0);
+                        }
+
+                        function resolveRadiusSource(el, wRef) {
+                            const PROPS = ['borderTopLeftRadius', 'borderTopRightRadius', 'borderBottomRightRadius', 'borderBottomLeftRadius'];
+                            for (const target of [el, ...el.children]) {
+                                const cs = getComputedStyle(target);
+                                if (PROPS.some(p => parseRadius(cs[p], wRef) > 0)) return cs;
+                            }
+                            return getComputedStyle(el);
+                        }
+
+                        const w = rect.width;
+                        const cs = resolveRadiusSource(el, w);
+                        this.cursor.style.borderRadius = [
+                            cs.borderTopLeftRadius,
+                            cs.borderTopRightRadius,
+                            cs.borderBottomRightRadius,
+                            cs.borderBottomLeftRadius,
+                        ].map(v => `${parseRadius(v, w) + PADDING}px`).join(' ');
+                    }
+
+                    trackLink = () => {
+                        if (this.currentLinkEl) {
+                            this.updateCursorForLink(this.currentLinkEl);
+                            this.rafId = requestAnimationFrame(this.trackLink);
+                        }
+                    };
+
+                    // Lifecycle
+                    init() {
+                        this.ac = new AbortController();
+                        const signal = this.ac.signal;
+
+                        this.cursor = document.getElementById('cursor');
+                        if (!this.cursor) return;
+
+                        document.addEventListener('touchstart', () => { this.lastTouchTime = Date.now(); this.hideCursor(); }, { passive: true, signal });
+                        document.addEventListener('touchmove',  () => { this.lastTouchTime = Date.now(); this.hideCursor(); }, { passive: true, signal });
+                        document.addEventListener('touchend',   () => { this.lastTouchTime = Date.now(); },                   { passive: true, signal });
+
+                        document.addEventListener('mouseover', (e) => { if (e.target.tagName === 'IFRAME' || e.target.closest('.cursor-system')) this.hideCursor(); }, { signal });
+
+                        document.addEventListener('mousemove', (e) => {
+                            if (this.isSyntheticMouse()) return;
+                            if (e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) return;
+
+                            if (e.target.closest('.cursor-system')) { this.hideCursor(); return; }
+
+                            this.mouseX = e.clientX;
+                            this.mouseY = e.clientY;
+
+                            this.showCursor();
+
+                            const linkEl = this.findNearbyLink(this.mouseX, this.mouseY);
+
+                            if (linkEl) {
+                                if (this.currentLinkEl !== linkEl) {
+                                    this.currentLinkEl = linkEl;
+                                    if (this.rafId) cancelAnimationFrame(this.rafId);
+                                    this.rafId = requestAnimationFrame(this.trackLink);
+                                }
+                            } else {
+                                if (this.currentLinkEl) {
+                                    this.currentLinkEl = null;
+                                    if (this.rafId) { cancelAnimationFrame(this.rafId); this.rafId = null; }
+                                }
+                                this.cursor.classList.remove('on-link');
+                                this.cursor.style.transform = this.isMouseDown ? 'translate(-50%, -50%) scale(0.9)' : 'translate(-50%, -50%)';
+                                this.cursor.style.borderRadius = '';
+                                this.cursor.style.left = this.mouseX + 'px';
+                                this.cursor.style.top  = this.mouseY + 'px';
+                                this.cursor.style.width = '';
+                                this.cursor.style.height = '';
+
+                                if (this.isOverRenderedText(this.mouseX, this.mouseY)) {
+                                    this.cursor.classList.add('on-text');
+                                } else {
+                                    this.cursor.classList.remove('on-text');
+                                }
+                            }
+                        }, { signal });
+
+                        document.addEventListener('mousedown', () => {
+                            this.isMouseDown = true;
+                            this.cursor.style.transform = this.currentLinkEl ? 'none' : 'translate(-50%, -50%) scale(0.9)';
+                        }, { signal });
+                        document.addEventListener('mouseup', () => {
+                            this.isMouseDown = false;
+                            this.cursor.style.transform = this.currentLinkEl ? 'none' : 'translate(-50%, -50%) scale(1)';
+                        }, { signal });
+
+                        window.addEventListener('scroll', () => {
+                            if (this.currentLinkEl) this.updateCursorForLink(this.currentLinkEl);
+                        }, { passive: true, signal });
+                    }
+
+                    cleanup() {
+                        if (this.ac) this.ac.abort();
+                        if (this.rafId) { cancelAnimationFrame(this.rafId); this.rafId = null; }
+                        document.documentElement.style.cursor = '';
+                        this.currentLinkEl = null;
+                    }
+
+                    reinit() {
+                        this.cursor = document.getElementById('cursor');
+                        if (!this.cursor) return;
+
+                        this.currentLinkEl = null;
+
+                        if (this.rafId) {
+                            cancelAnimationFrame(this.rafId); this.rafId = null;
+                        }
+
+                        this.cursor.classList.remove('on-link', 'on-text');
+                        this.cursor.style.transform = 'translate(-50%, -50%)';
+                        this.cursor.style.borderRadius = '';
+                        this.cursor.style.left = this.mouseX + 'px';
+                        this.cursor.style.top  = this.mouseY + 'px';
+                        this.cursor.style.width = '';
+                        this.cursor.style.height = '';
+
+                        const newLinkEl = this.findNearbyLink(this.mouseX, this.mouseY);
+                        if (newLinkEl) {
+                            this.currentLinkEl = newLinkEl;
+                            this.rafId = requestAnimationFrame(this.trackLink);
+                        } else if (this.isOverRenderedText(this.mouseX, this.mouseY)) {
+                            this.cursor.classList.add('on-text');
+                        }
+
+                        this.init();
+                    }
+                }
+
+                const cursor = new Cursor();
+                window.nercone.register('cursor', {
+                    init:    () => cursor.init(),
+                    cleanup: () => cursor.cleanup(),
+                    reinit:  () => cursor.reinit()
+                });
+            })();
         </script>
+
+        <!-- Script: class-prefix.js -->
+        <script>
+            (() => {
+                class ClassPrefix {
+                    static CONFIG = [
+                        { prefix: 'small',  media: '(max-width: 768px)' },
+                        { prefix: 'medium', media: '(min-width: 769px) and (max-width: 1080px)' },
+                        { prefix: 'large',  media: '(min-width: 1081px)' }
+                    ];
+
+                    constructor(config = ClassPrefixManager.CONFIG) {
+                        this.config = config;
+                        this.prefixes = config.map(e => e.prefix);
+                        this.selector = this.prefixes.map(p => `[class*="${p}:"]`).join(',');
+                        this.resolvers = new Map();
+                        this.unsubscribers = [];
+                        this.bodyObserver = null;
+                    }
+
+                    buildResolvers() {
+                        for (const entry of this.config) {
+                            if (entry.media) {
+                                const mq = window.matchMedia(entry.media);
+                                this.resolvers.set(entry.prefix, () => mq.matches);
+                                const h = () => this.applyAll();
+                                mq.addEventListener('change', h);
+                                this.unsubscribers.push(() => mq.removeEventListener('change', h));
+
+                            } else if (entry.attr) {
+                                const { selector, name: attrName, value: attrValue } = entry.attr;
+                                const target = document.querySelector(selector) || document.documentElement;
+                                this.resolvers.set(entry.prefix, () => target.getAttribute(attrName) === attrValue);
+                                const obs = new MutationObserver(() => this.applyAll());
+                                obs.observe(target, { attributes: true, attributeFilter: [attrName] });
+                                this.unsubscribers.push(() => obs.disconnect());
+
+                            } else if (entry.fn) {
+                                this.resolvers.set(entry.prefix, entry.fn);
+                            }
+                        }
+                    }
+
+                    applyToElement(el) {
+                        if (!(el instanceof Element)) return;
+                        for (const cls of el.classList) {
+                            const i = cls.indexOf(':');
+                            if (i === -1) continue;
+
+                            const resolver = this.resolvers.get(cls.slice(0, i));
+                            if (!resolver) continue;
+
+                            const name = cls.slice(i + 1);
+                            if (!name) continue;
+
+                            el.classList.toggle(name, resolver());
+                        }
+                    }
+
+                    applyToSubtree(root) {
+                        if (root instanceof Element) this.applyToElement(root);
+                        if (root.querySelectorAll) {
+                            root.querySelectorAll(this.selector).forEach(el => this.applyToElement(el));
+                        }
+                    }
+
+                    applyAll() {
+                        if (document.body) this.applyToSubtree(document.body);
+                    }
+
+                    init() {
+                        this.buildResolvers();
+
+                        this.bodyObserver = new MutationObserver((mutations) => {
+                            for (const m of mutations) {
+                                if (m.type === 'childList') {
+                                    for (const node of m.addedNodes) this.applyToSubtree(node);
+
+                                } else if (m.type === 'attributes') {
+                                    const el = m.target;
+                                    const oldSet = new Set((m.oldValue || '').split(/\s+/).filter(Boolean));
+
+                                    let hasNew = false;
+                                    for (const cls of el.classList) {
+                                        const idx = cls.indexOf(':');
+                                        if (idx !== -1 && this.resolvers.has(cls.slice(0, idx)) && !oldSet.has(cls)) {
+                                            hasNew = true;
+                                            break;
+                                        }
+                                    }
+
+                                    if (hasNew) this.applyToElement(el);
+                                }
+                            }
+                        });
+
+                        this.bodyObserver.observe(document.body, {
+                            childList: true,
+                            subtree: true,
+                            attributes: true,
+                            attributeFilter: ['class'],
+                            attributeOldValue: true
+                        });
+
+                        this.applyAll();
+                    }
+                }
+
+                const responsive = new ClassPrefix(window.nercone.responsiveConfig || ClassPrefix.CONFIG);
+                window.nercone.register('responsive', { init: () => responsive.init() });
+            })();
+        </script>
+
+        <!-- Script: components/dropdown.js -->
+        <script>
+            (() => {
+                class Dropdown {
+                    static CHEVRON_DOWN = '6 9 12 15 18 9';
+                    static CHEVRON_UP   = '6 15 12 9 18 15';
+
+                    constructor() {
+                        document.addEventListener('click', (e) => {
+                            const toggle = e.target.closest('.dropdown > button');
+                            if (toggle) {
+                                const dropdown = toggle.closest('.dropdown');
+                                dropdown.classList.toggle('is-open');
+                                this.setChevron(toggle, dropdown.classList.contains('is-open'));
+                                return;
+                            }
+                            document.querySelectorAll('.dropdown.is-open').forEach((d) => {
+                                if (!d.contains(e.target)) {
+                                    d.classList.remove('is-open');
+                                    const btn = d.querySelector(':scope > button');
+                                    if (btn) this.setChevron(btn, false);
+                                }
+                            });
+                        });
+                    }
+
+                    createChevron() {
+                        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                        svg.setAttribute('viewBox', '0 0 24 24');
+                        svg.setAttribute('width', '12');
+                        svg.setAttribute('height', '12');
+                        svg.setAttribute('fill', 'none');
+                        svg.setAttribute('stroke', 'currentColor');
+                        svg.setAttribute('stroke-width', '2');
+                        svg.setAttribute('stroke-linecap', 'round');
+                        svg.setAttribute('stroke-linejoin', 'round');
+                        svg.classList.add('dropdown-chevron');
+                        const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+                        poly.setAttribute('points', Dropdown.CHEVRON_DOWN);
+                        svg.appendChild(poly);
+                        return svg;
+                    }
+
+                    setChevron(btn, isOpen) {
+                        const poly = btn.querySelector('.dropdown-chevron polyline');
+                        if (poly) poly.setAttribute('points', isOpen ? Dropdown.CHEVRON_UP : Dropdown.CHEVRON_DOWN);
+                    }
+
+                    init() {
+                        document.querySelectorAll('.dropdown > button').forEach((btn) => {
+                            if (btn.dataset.dropdownInit) return;
+                            btn.dataset.dropdownInit = '1';
+                            if (!btn.querySelector('.dropdown-chevron')) btn.appendChild(this.createChevron());
+                        });
+                    }
+                }
+
+                const dropdown = new Dropdown();
+                window.nercone.register('dropdown', {
+                    init:   () => dropdown.init(),
+                    reinit: () => dropdown.init()
+                });
+            })();
+        </script>
+
+        <!-- Script: components/snowflake-toast.js -->
+        <script>
+            (() => {
+                class SnowflakeToast {
+                    init() {
+                        const toast = document.getElementById('snowflake-toast');
+                        if (!toast || toast.dataset.snowflakeToastInit) return;
+                        toast.dataset.snowflakeToastInit = '1';
+
+                        const closeButton = toast.querySelector('.snowflake-toast-close');
+                        if (closeButton) {
+                            closeButton.addEventListener('click', () => toast.classList.add('is-hidden'));
+                        }
+
+                        const minimizeButton = toast.querySelector('.snowflake-toast-minimize');
+                        if (minimizeButton) {
+                            const setMinimized = (minimized) => {
+                                toast.classList.toggle('is-minimized', minimized);
+                                minimizeButton.setAttribute('aria-pressed', minimized ? 'true' : 'false');
+                                minimizeButton.setAttribute('aria-label', minimized ? '表示' : '非表示');
+                            };
+                            minimizeButton.addEventListener('click', () => setMinimized(!toast.classList.contains('is-minimized')));
+                        }
+                    }
+                }
+
+                const snowflakeToast = new SnowflakeToast();
+                window.nercone.register('snowflake-toast', { init: () => snowflakeToast.init() });
+            })();
+        </script>
+
+        <!-- Stylesheet: fonts.css -->
+        <style>
+            @font-face {
+                font-family: "Nercone Sans JP";
+                src: local("Nercone Sans JP"), url("https://assets.nercone.dev/fonts/NerconeSansJP-Regular.woff2") format("woff2");
+                font-weight: 400;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans JP";
+                src: local("Nercone Sans JP"), url("https://assets.nercone.dev/fonts/NerconeSansJP-Italic.woff2") format("woff2");
+                font-weight: 400;
+                font-style: italic;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans JP";
+                src: local("Nercone Sans JP"), url("https://assets.nercone.dev/fonts/NerconeSansJP-Bold.woff2") format("woff2");
+                font-weight: 700;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans JP";
+                src: local("Nercone Sans JP"), url("https://assets.nercone.dev/fonts/NerconeSansJP-BoldItalic.woff2") format("woff2");
+                font-weight: 700;
+                font-style: italic;
+                font-display: swap;
+            }
+
+            @font-face {
+                font-family: "Nercone Sans SC";
+                src: local("Nercone Sans SC"), url("https://assets.nercone.dev/fonts/NerconeSansSC-Regular.woff2") format("woff2");
+                font-weight: 400;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans SC";
+                src: local("Nercone Sans SC"), url("https://assets.nercone.dev/fonts/NerconeSansSC-Italic.woff2") format("woff2");
+                font-weight: 400;
+                font-style: italic;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans SC";
+                src: local("Nercone Sans SC"), url("https://assets.nercone.dev/fonts/NerconeSansSC-Bold.woff2") format("woff2");
+                font-weight: 700;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans SC";
+                src: local("Nercone Sans SC"), url("https://assets.nercone.dev/fonts/NerconeSansSC-BoldItalic.woff2") format("woff2");
+                font-weight: 700;
+                font-style: italic;
+                font-display: swap;
+            }
+
+            @font-face {
+                font-family: "Nercone Sans TC";
+                src: local("Nercone Sans TC"), url("https://assets.nercone.dev/fonts/NerconeSansTC-Regular.woff2") format("woff2");
+                font-weight: 400;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans TC";
+                src: local("Nercone Sans TC"), url("https://assets.nercone.dev/fonts/NerconeSansTC-Italic.woff2") format("woff2");
+                font-weight: 400;
+                font-style: italic;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans TC";
+                src: local("Nercone Sans TC"), url("https://assets.nercone.dev/fonts/NerconeSansTC-Bold.woff2") format("woff2");
+                font-weight: 700;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans TC";
+                src: local("Nercone Sans TC"), url("https://assets.nercone.dev/fonts/NerconeSansTC-BoldItalic.woff2") format("woff2");
+                font-weight: 700;
+                font-style: italic;
+                font-display: swap;
+            }
+
+            @font-face {
+                font-family: "Nercone Sans KR";
+                src: local("Nercone Sans KR"), url("https://assets.nercone.dev/fonts/NerconeSansKR-Regular.woff2") format("woff2");
+                font-weight: 400;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans KR";
+                src: local("Nercone Sans KR"), url("https://assets.nercone.dev/fonts/NerconeSansKR-Italic.woff2") format("woff2");
+                font-weight: 400;
+                font-style: italic;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans KR";
+                src: local("Nercone Sans KR"), url("https://assets.nercone.dev/fonts/NerconeSansKR-Bold.woff2") format("woff2");
+                font-weight: 700;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Sans KR";
+                src: local("Nercone Sans KR"), url("https://assets.nercone.dev/fonts/NerconeSansKR-BoldItalic.woff2") format("woff2");
+                font-weight: 700;
+                font-style: italic;
+                font-display: swap;
+            }
+
+            @font-face {
+                font-family: "Nercone Mono JP";
+                src: local("Nercone Mono JP"), url("https://assets.nercone.dev/fonts/NerconeMonoJP-Regular.woff2") format("woff2");
+                font-weight: 400;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Mono JP";
+                src: local("Nercone Mono JP"), url("https://assets.nercone.dev/fonts/NerconeMonoJP-Italic.woff2") format("woff2");
+                font-weight: 400;
+                font-style: italic;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Mono JP";
+                src: local("Nercone Mono JP"), url("https://assets.nercone.dev/fonts/NerconeMonoJP-Bold.woff2") format("woff2");
+                font-weight: 700;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: "Nercone Mono JP";
+                src: local("Nercone Mono JP"), url("https://assets.nercone.dev/fonts/NerconeMonoJP-BoldItalic.woff2") format("woff2");
+                font-weight: 700;
+                font-style: italic;
+                font-display: swap;
+            }
+
+            :root {
+                --font-family-noto: "Noto Sans JP", "Noto Sans SC", "Noto Sans TC", "Noto Sans KR";
+                --font-family-sans: "Nercone Sans JP", "Inter", var(--font-family-noto), sans-serif;
+                --font-family-mono: "Nercone Mono JP", "Meslo", var(--font-family-noto), monospace;
+                --font-size: 12pt;
+            }
+
+            a {
+                text-decoration: underline;
+                color: inherit;
+            }
+            b {
+                font-weight: 700;
+            }
+            i {
+                font-style: italic;
+            }
+            u {
+                text-decoration: underline;
+            }
+            s {
+                text-decoration: line-through;
+            }
+
+            .font-sans-jp {
+                font-family: "Nercone Sans JP";
+            }
+            .font-sans-sc {
+                font-family: "Nercone Sans SC";
+            }
+            .font-sans-tc {
+                font-family: "Nercone Sans TC";
+            }
+            .font-sans-kr {
+                font-family: "Nercone Sans KR";
+            }
+            .font-mono-jp {
+                font-family: "Nercone Mono JP";
+            }
+
+            .font-thin {
+                font-weight: 100;
+            }
+            .font-extralight {
+                font-weight: 200;
+            }
+            .font-light {
+                font-weight: 300;
+            }
+            .font-regular {
+                font-weight: 400;
+            }
+            .font-medium {
+                font-weight: 500;
+            }
+            .font-semibold {
+                font-weight: 600;
+            }
+            .font-bold {
+                font-weight: 700;
+            }
+            .font-extrabold {
+                font-weight: 800;
+            }
+            .font-black {
+                font-weight: 900;
+            }
+            .font-extrablack {
+                font-weight: 1000;
+            }
+
+            .font-weight-100 {
+                font-weight: 100;
+            }
+            .font-weight-200 {
+                font-weight: 200;
+            }
+            .font-weight-300 {
+                font-weight: 300;
+            }
+            .font-weight-400 {
+                font-weight: 400;
+            }
+            .font-weight-500 {
+                font-weight: 500;
+            }
+            .font-weight-600 {
+                font-weight: 600;
+            }
+            .font-weight-700 {
+                font-weight: 700;
+            }
+            .font-weight-800 {
+                font-weight: 800;
+            }
+            .font-weight-900 {
+                font-weight: 900;
+            }
+            .font-weight-1000 {
+                font-weight: 1000;
+            }
+
+            .font-variant-normal {
+                font-variant: normal;
+            }
+
+            .font-variant-caps-normal {
+                font-variant-caps: normal;
+            }
+            .font-variant-caps-small {
+                font-variant-caps: small-caps;
+            }
+            .font-variant-caps-all-small {
+                font-variant-caps: all-small-caps;
+            }
+            .font-variant-caps-petite {
+                font-variant-caps: petite-caps;
+            }
+            .font-variant-caps-all-petite {
+                font-variant-caps: all-petite-caps;
+            }
+            .font-variant-caps-unicase {
+                font-variant-caps: unicase;
+            }
+            .font-variant-caps-titling {
+                font-variant-caps: titling-caps;
+            }
+
+            .font-variant-ligatures-normal {
+                font-variant-ligatures: normal;
+            }
+            .font-variant-ligatures-none {
+                font-variant-ligatures: none;
+            }
+            .font-variant-ligatures-contextual {
+                font-variant-ligatures: contextual;
+            }
+            .font-variant-ligatures-no-contextual {
+                font-variant-ligatures: no-contextual;
+            }
+            .font-variant-ligatures-common {
+                font-variant-ligatures: common-ligatures;
+            }
+            .font-variant-ligatures-no-common {
+                font-variant-ligatures: no-common-ligatures;
+            }
+            .font-variant-ligatures-discretionary {
+                font-variant-ligatures: discretionary-ligatures;
+            }
+            .font-variant-ligatures-no-discretionary {
+                font-variant-ligatures: no-discretionary-ligatures;
+            }
+            .font-variant-ligatures-historical {
+                font-variant-ligatures: historical-ligatures;
+            }
+            .font-variant-ligatures-no-historical {
+                font-variant-ligatures: no-historical-ligatures;
+            }
+
+            .font-variant-numeric-normal {
+                font-variant-numeric: normal;
+            }
+            .font-variant-numeric-ordinal {
+                font-variant-numeric: ordinal;
+            }
+            .font-variant-numeric-slashed-zero {
+                font-variant-numeric: slashed-zero;
+            }
+            .font-variant-numeric-lining {
+                font-variant-numeric: lining-nums;
+            }
+            .font-variant-numeric-oldstyle {
+                font-variant-numeric: oldstyle-nums;
+            }
+            .font-variant-numeric-proportional {
+                font-variant-numeric: proportional-nums;
+            }
+            .font-variant-numeric-tabular {
+                font-variant-numeric: tabular-nums;
+            }
+            .font-variant-numeric-diagonal-fractions {
+                font-variant-numeric: diagonal-fractions;
+            }
+            .font-variant-numeric-stacked-fractions {
+                font-variant-numeric: stacked-fractions;
+            }
+
+            .font-variant-position-normal {
+                font-variant-position: normal;
+            }
+            .font-variant-position-sub {
+                font-variant-position: sub;
+            }
+            .font-variant-position-super {
+                font-variant-position: super;
+            }
+
+            .font-variant-historical-forms {
+                font-variant-alternates: historical-forms;
+            }
+
+            .text-no-decoration {
+                text-decoration: none;
+            }
+            .text-italic {
+                font-style: italic;
+            }
+            .text-underline {
+                text-decoration: underline;
+            }
+            .text-overline {
+                text-decoration: overline;
+            }
+            .text-line-through {
+                text-decoration: line-through;
+            }
+
+            .font-xx-small {
+                font-size: xx-small;
+            }
+            .font-x-small {
+                font-size: x-small;
+            }
+            .font-small {
+                font-size: small;
+            }
+            .font-medium {
+                font-size: medium;
+            }
+            .font-large {
+                font-size: large;
+            }
+            .font-x-large {
+                font-size: x-large;
+            }
+            .font-xx-large {
+                font-size: xx-large;
+            }
+            .font-xxx-large {
+                font-size: xxx-large;
+            }
+            .font-smaller {
+                font-size: smaller;
+            }
+            .font-larger {
+                font-size: larger;
+            }
+        </style>
+
+        <!-- Stylesheet: cursor.css -->
+        <style>
+            * {
+                cursor: none;
+            }
+
+            .cursor-system, .cursor-system * {
+                cursor: auto;
+            }
+
+            #cursor {
+                view-transition-name: cursor;
+
+                background: var(--theme-color-background-cursor);
+
+                opacity: 0;
+
+                border-radius: 50%;
+
+                position: fixed;
+                z-index: 99999;
+                width: 25px;
+                height: 25px;
+
+                pointer-events: none;
+
+                transform: translate(-50%, -50%);
+                transition:
+                    transform     0.075s ease-out,
+                    left          0.075s ease-out,
+                    top           0.075s ease-out,
+                    width         0.15s cubic-bezier(0.125,1,0.25,1),
+                    height        0.15s cubic-bezier(0.125,1,0.25,1),
+                    border-radius 0.15s cubic-bezier(0.125,1,0.25,1),
+                    background    0.15s ease,
+                    opacity       0.25s ease;
+            }
+
+            #cursor.visible {
+                opacity: 1;
+            }
+
+            #cursor.on-text {
+                width: 3px;
+                border-radius: 1.5px;
+            }
+            #cursor.on-link {
+                background: var(--theme-color-background-cursor-on-link);
+                transform: translate(0, 0);
+            }
+        </style>
+
+        <!-- Stylesheet: layout.css -->
+        <style>
+            section {
+                padding-top: 4px;
+                padding-bottom: 4px;
+            }
+
+            blockquote {
+                border-left: solid 4px var(--theme-color-background-alt);
+                padding-left: 8px;
+                margin: 0 0 16px 0;
+            }
+
+            .hero {
+                background-color: color-mix(in srgb, var(--theme-color-background) 90%, var(--theme-color-stark));
+
+                position: relative;
+                overflow: hidden;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+
+                box-sizing: border-box;
+
+                width: 100vw;
+                height: 40vh;
+
+                margin: 0;
+                margin-left: calc(50% - 50vw);
+
+                padding: 24px;
+            }
+            .hero::before {
+                content: "";
+                position: absolute;
+                inset: 0px;
+
+                background-image: var(--hero-image, none);
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center;
+
+                mask-image: linear-gradient(to bottom, black, rgba(0,0,0,0.2));
+                filter: brightness(0.8) blur(1px);
+            }
+            main > .hero {
+                margin-top: -24px;
+            }
+            .hero > * {
+                position: relative;
+                margin: 0;
+            }
+            .hero > h1 {
+                padding-bottom: 0;
+                border-bottom: none;
+            }
+            .hero > p {
+                color: var(--theme-color-text-alt);
+            }
+
+            .flex {
+                display: flex;
+                align-items: center;
+                gap: 16px;
+            }
+            .flex > * {
+                margin: 0;
+            }
+            .flex-1 {
+                flex: 1;
+            }
+            .flex-vertical {
+                flex-direction: column;
+            }
+            .flex-wrap {
+                flex-wrap: wrap;
+            }
+
+            .block {
+                position: relative;
+                border: solid 1px var(--theme-color-border);
+
+                padding: 16px;
+                margin-bottom: 16px;
+            }
+            .block > *:first-child {
+                margin-top: 0;
+            }
+            .block > *:last-child {
+                margin-bottom: 0;
+            }
+            .block::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 4px;
+            }
+
+            .block-note::before {
+                background-color: var(--color-bright-blue);
+            }
+            .block-note > b:first-child {
+                color: var(--color-bright-blue);
+            }
+            .block-tip::before {
+                background-color: var(--color-bright-green);
+            }
+            .block-tip > b:first-child {
+                color: var(--color-bright-green);
+            }
+            .block-important::before {
+                background-color: var(--color-bright-purple);
+            }
+            .block-important > b:first-child {
+                color: var(--color-bright-purple);
+            }
+            .block-warning::before {
+                background-color: var(--color-bright-yellow);
+            }
+            .block-warning > b:first-child {
+                color: var(--color-bright-yellow);
+            }
+            .block-caution::before {
+                background-color: var(--color-bright-red);
+            }
+            .block-caution > b:first-child {
+                color: var(--color-bright-red);
+            }
+
+            .no-top-margin {
+                margin-top: 0px;
+            }
+            .no-bottom-margin {
+                margin-bottom: 0px;
+            }
+
+            .hide {
+                display: none;
+            }
+            .show {
+                display: block;
+            }
+
+            .overflow-show {
+                overflow: visible;
+            }
+            .overflow-hide {
+                overflow: hidden;
+            }
+            .overflow-scroll {
+                overflow: scroll;
+            }
+
+            .limited-width {
+                width: none;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .limited-width > img {
+                max-width: 100%;
+            }
+            .limited-width > img:first-child {
+                margin-top: 24px;
+            }
+            @media (min-width: 769px) {
+                .limited-width {
+                    width: 75vh;
+                }
+            }
+        </style>
+
+        <!-- Stylesheet: miscellaneous.css -->
+        <style>
+            .selectable {
+                user-select: auto;
+                -webkit-touch-callout: default;
+            }
+            .unselectable {
+                user-select: none;
+                -webkit-touch-callout: none;
+            }
+
+            .banner {
+                height: 50px;
+                width: auto;
+            }
+
+            .small-icon {
+                width: var(--font-size);
+                height: var(--font-size);
+                display: block;
+            }
+        </style>
+
+        <!-- Stylesheet: components/button.css -->
+        <style>
+            .button {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 12px;
+                font-family: inherit;
+                font-size: smaller;
+                font-weight: 400;
+                color: var(--theme-color-text);
+                background-color: transparent;
+                border: 1px solid var(--theme-color-text-headline-underline);
+                text-decoration: none;
+                transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+                white-space: nowrap;
+                user-select: none;
+                box-sizing: border-box;
+            }
+            .button:hover {
+                background-color: color-mix(in srgb, var(--theme-color-stark) 8%, transparent);
+                color: var(--theme-color-stark);
+                border-color: var(--theme-color-text-alt);
+            }
+            .button:active {
+                background-color: color-mix(in srgb, var(--theme-color-stark) 16%, transparent);
+            }
+            .button.is-active {
+                background-color: var(--theme-color-background-alt);
+                color: var(--theme-color-stark);
+                border-color: var(--theme-color-text-alt);
+                font-weight: 600;
+            }
+            .button:disabled,
+            .button.is-disabled {
+                opacity: 0.4;
+                pointer-events: none;
+            }
+
+            .button-primary {
+                color: var(--theme-color-background);
+                background-color: var(--theme-color-stark);
+                border-color: var(--theme-color-stark);
+            }
+            .button-primary:hover {
+                background-color: var(--theme-color-text);
+                border-color: var(--theme-color-text);
+                color: var(--theme-color-background);
+            }
+            .button-primary:active {
+                background-color: var(--theme-color-text-alt);
+                border-color: var(--theme-color-text-alt);
+            }
+
+            .button-ghost {
+                border-color: transparent;
+            }
+            .button-ghost:hover {
+                border-color: transparent;
+            }
+            .button-ghost:active {
+                border-color: transparent;
+            }
+        </style>
+
+        <!-- Stylesheet: components/dropdown.css -->
+        <style>
+            .dropdown {
+                background-color: var(--theme-color-background-dropdown);
+                position: relative;
+                display: inline-block;
+            }
+
+            .dropdown > button.dropdown-item {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .dropdown-chevron {
+                width: 1.2em;
+                height: 1.2em;
+                flex-shrink: 0;
+                box-sizing: content-box;
+                overflow: visible;
+                vertical-align: middle;
+            }
+
+            .dropdown-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                min-width: 100%;
+                background-color: var(--theme-color-background);
+                border: 1px solid var(--theme-color-border);
+                margin-top: 2px;
+                z-index: 100;
+            }
+            .dropdown.is-open > .dropdown-menu {
+                display: block;
+            }
+
+            .dropdown-item {
+                display: block;
+                padding: 6px 12px;
+                font-size: smaller;
+                font-family: inherit;
+                font-weight: 400;
+                color: var(--theme-color-text);
+                background: none;
+                border: none;
+                width: 100%;
+                text-align: left;
+                text-decoration: none;
+                white-space: nowrap;
+                box-sizing: border-box;
+                transition: background-color 0.15s, color 0.15s;
+            }
+            .dropdown-item.is-active {
+                background-color: var(--theme-color-background-dropdown-active);
+                color: var(--theme-color-stark);
+            }
+
+            .dropdown-separator {
+                border: none;
+                border-top: 1px solid var(--theme-color-text-headline-underline);
+                margin: 4px 0;
+            }
+        </style>
+
+        <!-- Stylesheet: components/snowflake-toast.css -->
+        <style>
+            .snowflake-toast {
+                view-transition-name: snowflake-toast;
+
+                border: 1px solid var(--theme-color-border-header);
+
+                width: 320px;
+                max-width: calc(100vw - 32px);
+
+                position: fixed;
+                right: 16px;
+                bottom: 16px;
+                z-index: 1000;
+            }
+            .snowflake-toast.is-hidden {
+                display: none;
+            }
+
+            .snowflake-toast-header {
+                font-size: smaller;
+
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+
+                gap: 6px;
+                padding: 6px;
+            }
+
+            .snowflake-toast-link {
+                cursor: pointer;
+            }
+
+            .snowflake-toast-actions {
+                display: flex;
+                align-items: center;
+
+                gap: 2px;
+                flex-shrink: 0;
+            }
+
+            .snowflake-toast-minimize,
+            .snowflake-toast-close {
+                background: none;
+
+                border: none;
+
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+
+                width: var(--font-size);
+                height: var(--font-size);
+
+                padding: 0;
+                flex-shrink: 0;
+            }
+            .snowflake-toast-minimize, .snowflake-toast-minimize *,
+            .snowflake-toast-close, .snowflake-toast-close * {
+                cursor: pointer;
+            }
+            .snowflake-toast-minimize svg,
+            .snowflake-toast-close svg {
+                width: var(--font-size);
+                height: var(--font-size);
+            }
+
+            .snowflake-toast-minimize-vertical {
+                display: none;
+            }
+            .snowflake-toast.is-minimized .snowflake-toast-minimize-vertical {
+                display: inline;
+            }
+
+            .snowflake-toast iframe {
+                border: none;
+                display: block;
+                width: 320px;
+                height: 262px;
+                max-width: 100%;
+            }
+            .snowflake-toast.is-minimized iframe {
+                height: 0;
+                min-height: 0;
+                overflow: hidden;
+                pointer-events: none;
+            }
+
+            @media (max-width: 512px) {
+                .snowflake-toast {
+                    right: auto;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+            }
+
+            @media (prefers-color-scheme: light) {
+                :root {
+                    --color-scheme-background-snowflake: #f9f9fa;
+                }
+                .snowflake-toast {
+                    background: var(--color-scheme-background-snowflake);
+                }
+                .snowflake-toast * {
+                    color: #000000;
+                }
+            }
+
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --color-scheme-background-snowflake: #38383d;
+                }
+                .snowflake-toast {
+                    background: var(--color-scheme-background-snowflake);
+                }
+                .snowflake-toast * {
+                    color: #ffffff;
+                }
+            }
+        </style>
+
+        <noscript>
+            <!-- Stylesheet: noscript.css -->
+            <style>
+                * {
+                    cursor: auto;
+                }
+
+                #loading-overlay {
+                    display: none;
+                }
+            </style>
+        </noscript>
     </body>
 </html>
